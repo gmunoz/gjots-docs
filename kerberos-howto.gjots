@@ -1,0 +1,288 @@
+Kerberos V - Heimdal Server/Client Configuration
+
+The following details the configuration of a heimdal kerberos server and client(s) for a distributed authentication environment.
+
+The main documentation for heimdal that this installation information was derived from may be found here:
+  http://www.pdc.kth.se/heimdal/heimdal.html
+
+Usefult links (faq's, docs, etc.):
+  http://www.fnal.gov/docs/strongauth/html/
+  http://kirby.hpcmp.hpc.mil/docs/krb-faq-ahpcrc.html
+\NewEntry
+Conventions Used
+
+Root prompts are denoted as follows:
+  #
+
+Normal user prompts are denoted as follows:
+  $
+
+Throughout this document, another non-standard prompt is used for the interactive mode of the kadmin(8) utility and it is denoted as:
+  kadmin>
+
+The hash and dollar sign are standard conventions used in UNIX, but the kadmin prompt is more specific to this document.
+\NewEntry
+Kerberos (heimdal) Server
+
+Use the following command in debian to install:
+  # apt-get install heimdal-kdc
+
+NOTE: On debian, the `kdc' binary is installed in
+      `/usr/lib/heimdal-servers'.
+
+NOTE: Also on debian (other distros may apply), make sure the following
+      lines are located in `/etc/services':
+        krb_prop      754/tcp        # Kerberos slave propagation
+        iprop         2121/tcp       # incremental propagation
+
+Main documentation is found here:
+  http://www.pdc.kth.se/heimdal/heimdal.html
+
+The directory that debian uses in /var to store the database is `/var/lib/heimdal-kdc/heimdal'. This directory should have been created. If it has not been created then the debain installation has not finished correctly. On non-debian systems, the default directory is `/var/heimdal'. Make sure to note this in your configuration and create the directory if it does not exist.
+  # mkdir -p /var/heimdal
+
+Create a master key to encrypt the database with:
+  # kstash
+     Master key: 
+     Verifying - Master key: 
+     kstash: writing key to `/var/lib/heimdal-kdc/m-key'
+
+Initialize the realm database:
+  # kadmin -l
+    kadmin> init ACM.CS.UWEC.EDU
+     Realm max ticket life [unlimited]:
+     Realm max renewable ticket life [unlimited]:
+
+    kadmin> list *
+     default@ACM.CS.UWEC.EDU
+     kadmin/admin@ACM.CS.UWEC.EDU
+     kadmin/hprop@ACM.CS.UWEC.EDU
+     kadmin/changepw@ACM.CS.UWEC.EDU
+     changepw/kerberos@ACM.CS.UWEC.EDU
+     krbtgt/ACM.CS.UWEC.EDU@ACM.CS.UWEC.EDU
+
+Add administrator keys (still in kadmin):
+    kadmin> add quasar/admin
+     Max ticket life [1 day]:unlimited
+     Max renewable life [1 week]:unlimited
+     Principal expiration time [never]:
+     Password expiration time [never]:
+     Attributes []:
+     quasar/admin@ACM.CS.UWEC.EDU's Password: 
+     Verifying - quasar/admin@ACM.CS.UWEC.EDU's Password:
+
+NOTE: The kadmin/admin principle may already exist, if so then it is safe to skip this part.
+    kadmin> add -r kadmin/admin@ACM.CS.UWEC.EDU
+     Max ticket life [1 day]:unlimited
+     Max renewable life [1 week]:unlimited
+     Principal expiration time [never]:
+     Password expiration time [never]:
+     Attributes []:
+
+Enable remote administration by creating `/var/lib/heimdal-kdc/kadmind.acl':
+  # echo 'quasar/admin@ACM.CS.UWEC.EDU all' > \
+        /var/lib/heimdal-kdc/kadmind.acl
+
+Back in the kadmin interface, begin to add users:
+    kadmin> add testuser
+
+Test the user account:
+  # kdc &
+  # kinit testuser
+     testuser@ACM.CS.UWEC.EDU's Password:
+  # klist
+    => This should show the ticket info if it succedded.
+
+Now that everything is working, a host keytab must be generated on the main kerberos server for *each* client host. On the main kerberos server execute:
+  # kadmin -l
+    kadmin> ank --random-key host/mppf.cs.uwec.edu
+     Max ticket life [1 day]:
+     Max renewable life [1 week]:
+     Principal expiration time [never]:
+     Password expiration time [never]:
+     Attributes []:
+
+Export the client keytab with:
+    kadmin> ext -k /tmp/tmp.keytab host/mppf.cs.uwec.edu
+
+Exit `kadmin' and securely copy the exported keytab to the host you are setting up:
+  # scp /tmp/tmp.keytab root@mppf.cs.uwec.edu:/etc/krb5.keytab
+  # rm /tmp/tmp.keytab
+
+Session to the client host and chmod the `krb5.keytab' to be readable only by root:
+  # chmod 0600 /etc/krb5.keytab
+\NewEntry
+Kerberos (heimdal) Slave Server
+
+Full Propogration
+=================
+
+First, make sure the master auth server has the hprp/<hostname> principle in the kerberos database:
+  master# kadmin -l
+  kadmin> add hprop/mppf.cs.uwec.edu
+
+You will need to re-export the keytab (if you have not already done so to get simple authentication working, else this is the first export of the keytab). You will require both the host and hprop related principles for the given hostname:
+  master# kadmin -l
+  kadmin> ext -k /tmp/tmp.keytab host/mppf.cs.uwec.edu hprop/mppf.cs.uwec.edu
+
+Copy the extracted keytab from the master to the slave file `/etc/krb5.keytab', and make sure the permissions are 0600 on that same file on the slave.
+
+Each slave server will need a special key generated by the master kerberos server for the hprop/`hostname` principle. Create this with the following command:
+  slave# ktutil get -p quasar/admin host/`hostname`
+
+NOTE: 'quasar/admin' is a principle for the administrator in the master KDC server. Make it whatever you want.
+
+On the slave, test the `hpropd' command:
+  slave# hpropd
+
+On the master authentication server propogate the database with:
+  master# hprop <slave_hostname>
+
+If no errors were reported then the authentication server propogated successfully.
+
+Incremental Propogation
+=======================
+
+Follow these directions to enable incremental propogation.
+
+On the master, create a `/var/lib/heimda/slaves' file that contains a listing of the slave servers that will use incremental propogation. An example file may look like:
+
+***** Begin Config File *****
+iprop/blackhole.cs.uwec.edu@ACM.CS.UWEC.EDU
+iprop/mppf.cs.uwec.edu@ACM.CS.UWEC.EDU
+***** End Config File *****
+
+Add the iprop/`hostname` pinciple for the master authentication server:
+  master# kadmin -l
+   kadmin> add iprop/quasar.cs.uwec.edu
+
+Add an iprop/<hostname> for the slave server as well:
+  master# kadmin -l
+   kadmin> add iprop/mppf.cs.uwec.edu
+
+Re-extract the keytab that will contain the new iprop principle:
+  master # kadmin -l
+  kadmin> ext -k /tmp/tmp.keytab host/mppf.cs.uwec.edu hprop/mppf.cs.uwec.edu iprop/mppf.cs.uwec.edu
+
+Securely copy the keytab to the slave server in `/etc/krb5.keytab' and make sure its permissions are set to 0600.
+
+Start the master and slave daemons for incremental propogation:
+  master# ipropd-master &
+  slave# ipropd-slave <master_hostname> &
+
+NOTE: Incremental propogation seems a little buggy still. You may want to stick with the basic full propogation system above instead.
+\NewEntry
+SACM Setup
+
+To intall under debian:
+  # apt-get install heimdal-clients heimdal-docs
+
+Each node should have a group id of 1000 for sacm.
+  # addgroup sacm
+
+Only quasar needs to create user home directories. All other servers should create the user and not create the home directory; however, the home directory path still needs to be set correctly on all servers.
+
+The simplest way to achieve this is to not copy any skel files over on the client nodes.
+
+All user accounts should be sync'd in /etc/passwd to have identical username => uid/gid attributes.
+
+Authentication
+==============
+
+1) Initially add users into the kerberos database on the primary KDC:
+   # kadmin -l
+     kadmin> add <username>
+   Provide a default password, accept all the default options.
+
+2) Add the user on all physical machines that the user will have access
+   to (e.g. blackhole, mppf, etc.):
+   # useradd -m <username>
+
+3) Add a `.forward' file to the users home directory with their UWEC
+   email address. This is performed by assuming that no one will ever
+   check their local email and will ensure that any administrative
+   messages will reach the user's email account.
+   # echo "<uwec_username>@uwec.edu" > ~<username>/.forward
+\NewEntry
+Linux
+\NewFolder
+\NewEntry
+Adding Users
+
+1) Add the user to the UNIX password file.
+   # useradd -s $SHELL -g $GROUP -m <username>
+
+2) Add the user to the Kerberos password database.
+   # kadmin -l add -p <password> --max-ticket-life="1 day" \
+       --max-renewable-life="1 week" --attributes="" \
+       --expiration-time="never" --pw-expiration-time="never" <username>
+
+Most of the additional options here are explicitly setting the default options so that the command remains completely non-interactive.
+
+3) Add the user to the Samba database.
+   # echo -e "<password>\n<password>" | smbpasswd -s -a <username>
+
+Note that the odd syntax for setting the password in samba is for newer versions of Samba (3.0.7 rings a bell, but this is unverified). The chance occured sometime after the initial release of samba-3.0.0 and after 3.0.7. The format needs to be the password spelled out twice and seperated by a newline character for the double-authentication method used by samba.
+\NewEntry
+Deleting Users
+
+1) Delete the user from the Samba password database.
+   # smbpasswd -x <username>
+
+2) Delete the user from the UNIX passwd file.
+   # userdel <username>
+
+3) Delete the user from the kerberos authentication server.
+   # kadmin -l delete <username>
+\EndFolder
+\NewEntry
+FreeBSD
+\NewFolder
+\NewEntry
+Adding Groups
+
+# pw groupadd -g <GID> -n <group_name>
+\NewEntry
+Adding User accounts
+
+# pw useradd -u <UID> -n <USERNAME> -g <PRIMARY_GROUP> -G <SUP_GROUP> \
+    -s <SHELL>
+\NewEntry
+Deleting Users
+
+To delete a user account on FreeBSD issue the following type of command:
+  # pw userdel <username>
+\EndFolder
+\NewEntry
+Troubleshoot
+
+http://www.fnal.gov/docs/strongauth/presentations/troubleshoot.html
+\NewFolder
+\NewEntry
+Cannot determine realm for host
+
+Problem:
+
+Sep 19 00:19:01 mppf sshd[3631]: pam_krb5: verify_krb_v5_tgt():
+   krb5_sname_to_principal(): Cannot determine realm for host
+
+Solution:
+
+DNS has to be working correctly. This is either by the /etc/resolv.conf file or by the /etc/hosts file (of course hosts is checked first). Make sure all FQDN's *and* aliases for the FQDN point to the same address. Even if in an internal network make sure *not* to point the aliases to the internal addresses; instead, use completely different names to get the job done in /etc/hosts.
+\NewEntry
+Kerberos Time
+
+Problem:
+
+Time
+
+Solution:
+
+All kerberos authenticaion depends on the time of all the machines to be relatively close. See documentation for exact details on how close. Make sure none of you system clocks have a clock skew (install ntpdate).
+\NewEntry
+When in doubt
+
+General solutions:
+
+Make sure all kerberos clients have identical krb5.conf files in /etc as the KDC servers.
+\EndFolder

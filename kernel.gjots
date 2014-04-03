@@ -1,0 +1,511 @@
+Linux Kernel Notes
+
+Any function that accesses user space:
+  - must be reentrant
+  - must be able to execute concurrently with other deiver functions
+  - must be in a posisiont where it can legally sleep
+This is, in part, due to the fact that the user space pointer that needs to be accessed (e.g. via copy_to_user or copy_from_user) could have been swapped out of paged memory, and the VM subsystem will bring those pages in but will sleep in the process of doing so.
+\NewEntry
+struct task_struct *current;
+
+Desc:
+  Returns a reference to the current process.
+
+Defined in:
+  #include <linux/sched.h>
+  or
+  #include <asm/current.h>
+
+Returns:
+  pointer to struct task_struct (defined in <linux/sched.h>)
+
+Usage:
+  printk(KERN_ALERT "pid = %i\n", current->pid);
+\NewEntry
+cdev
+
+#include <linux/cdev.h>
+
+The kernel uses structures of type struct cdev to represent character devices.
+\NewEntry
+General Kernel Functions
+\NewFolder
+\NewEntry
+printk()
+
+KERN_EMERG
+  Used for emergency messages, usually those that precede a crash.
+KERN_ALERT
+  A situation requiring immediate action.
+KERN_CRIT
+  Critical conditions, often related to serious hardware or software
+  failures.
+KERN_ERR
+  Used to report error conditions; device drivers often use KERN_ERR to
+  report hardware difficulties.
+KERN_WARNING
+  Warnings about problematic situations that do not, in themselves,
+  create serious problems with the system.
+KERN_NOTICE
+  Situations that are normal, but still worthy of note. A number of
+  security-related conditions are reported at this level.
+KERN_INFO
+  Informational messages. Many drivers print information about the
+  hardware they find at startup time at this level.
+KERN_DEBUG
+  Used for debugging messages.
+\NewEntry
+container_of(pointer, container_type, container_field);
+
+#include <linux/kernel.h>
+
+This macro takes a 'pointer' to a field of type 'container_field', within a structure of type 'container_type', and returns a pointer to the containing structure.
+
+Usage:
+  struct skull_dev *dev;  /* Device info */
+  dev = container_of(inode->i_cdev, struct scull_dev, cdev);
+  filp->private_data = dev;  /* For other methods */
+\EndFolder
+\NewEntry
+Memory Management
+\NewFolder
+\NewEntry
+void *kmalloc(size_t size, int flags);
+
+#include <linux/slab.h>
+
+\NewEntry
+void kfree(void *ptr);
+
+#include <linux/slab.h>
+
+\EndFolder
+\NewEntry
+User Access
+\NewFolder
+\NewEntry
+unsigned long copy_to_user(void __user *to, const void *from, unsigned long count);
+
+#include <asm/uaccess.h>
+
+If the pointer is invalid, no copy is performed; if an invalid address is encountered during the copy, only part of the data is copied.
+
+Note: If you don't need to check the pointer (it has already been checked), then you can call __copy_to_user directly.
+
+Return Value
+  Returns the amount of memory still to be copied.
+
+REFERENCE: ldd3 p. 64
+\NewEntry
+unsigned long copy_from_user(void __user *to, const void *from, unsigned long count);
+
+#include <asm/uaccess.h>
+
+If the pointer is invalid, no copy is performed; if an invalid address is encountered during the copy, only part of the data is copied.
+
+Note: If you don't need to check the pointer (it has already been checked), then you can call __copy_from_user directly.
+
+Return Value
+  Returns the amount of memory still to be copied.
+
+REFERENCE: ldd3 p. 64
+\EndFolder
+\NewEntry
+Module functions/macros
+
+Header:
+  #include <linux/module.h>
+
+Module macros can appear anywhere whitn the source files outside of a function. However, it has become convention in kernel code to place this info at the end of the file.
+\NewFolder
+\NewEntry
+MODULE_LICENSE("GPL");
+
+Replace GPL with whatever license your module is under. Licenses recognized by the kernel are:
+  GPL (for any version of the GNU General Public License)
+  GPL v2 (for GPL version two only)
+  GPL and additional rights
+  Dual BSD/GPL
+  Dual MPL/GPL
+  Proprietary
+
+If a module is loaded that is not explicitly under a free license recognized by the kernel, then the kernel is considered "tainted".
+
+Every module should include this macro to specify what license the module is released under. This is not required for the module to run, but is useful to many users/developers.
+\NewEntry
+MODULE_DESCRIPTION(desc)
+
+A macro to add a human readable description about what the module does.
+\NewEntry
+MODULE_VERSION(version)
+
+Used to specify the version of the module.
+\NewEntry
+MODULE_ALIAS(alias)
+
+Another name by which this module can be known.
+\NewEntry
+MODULE_DEVICE_TABLE(table)
+
+Tells user space about which devices the module supports.
+\NewEntry
+THIS_MODULE
+
+#include <linux/module.h>
+
+A macro that represents a pointer to the current module.
+\NewEntry
+module_init(function);
+
+#include <linux/init.h>
+
+The module initialization function registers any facility offered by the module.
+
+Usage:
+  static int __init init_function(void)
+  {
+  	/* code */
+  }
+  module_init(init_function);
+
+The '__init' token helps the kernel decide that this function is only used once, and after the module is loaded the kernel will reclaim any memory that this function had taken up in kernel space. There is also a token for __initdata for variables that are only used on initialization, and can be reclaimed by the kernel once the module is initialized. The use of these tokens are optional.
+\NewEntry
+module_exit(cleanup_function);
+
+#include <linux/init.h>
+
+Every nontrivial module also requires a cleanup function, which unregisters interfaces and returns all resources to the system before the module is removed.
+
+Usage:
+  static void __exit cleanup_function(void)
+  {
+  	/* code */
+  }
+  module_exit(cleanup_function);
+\NewEntry
+module_param(variable, type, permission);
+
+#include <linux/moduleparam.h>
+
+variable - The variable to allow to be changed by the parameter.
+type - The type of the 'variable'.
+permission - The permission mask of the variable.
+
+The macro should be placed outside any functions, and typically appears at the head of the file.
+\NewEntry
+module_param_array(variable, type, num, permission);
+
+#include <linux/moduleparam.h>
+
+variable - The variable to allow to be changed by the parameter.
+type - The type of the array elements.
+num - An integer value of the number of array elements.
+permission - The permission mask of the variable.
+
+The macro should be placed outside any functions, and typically appears at the head of the file.
+\NewEntry
+__init
+\NewEntry
+__initdata
+\NewEntry
+__devinit
+\NewEntry
+__devinitdata
+\EndFolder
+\NewEntry
+Kernel Device Functions
+\NewFolder
+\NewEntry
+MAJOR(dev_t dev);
+
+#include <linux/kdev_t.h>
+
+This macro will return the major parts of a dev_t.
+\NewEntry
+MINOR(dev_t dev);
+
+#include <linux/kdev_t.h>
+
+This macro will return the minor parts of a dev_t.
+\NewEntry
+MKDEV(int major, int minor);
+
+#include <linux/kdev_t.h>
+
+Use this macro if you have major and minor numbers of a device, and need to turn them into a dev_t.
+\EndFolder
+\NewEntry
+Allocating/Freeing Device Numbers
+\NewFolder
+\NewEntry
+int register_chrdev_region(dev_t first, unsigned int count, char *name);
+
+#include <linux/fs.h>
+
+first
+  The beginning device number of the range you would like to allocate.
+  The minor number of first is often 0, but there is no requirement to
+  that effect.
+count
+  The total number of contiguous device numbers you are requesting. Note
+  that, if count is large, the range you request could spill over to
+  the next major number; but everything will still work properly as
+  long as the number range you request is available.
+name
+  The name of the device that should be associated with this numbering
+  range; it will appear in /proc/devices and sysfs.
+
+Return Value:
+  The return value will be 0 if the allocation was successfully
+  performed. In case of error, a negative error code will be returned.
+\NewEntry
+int alloc_chrdev_region(dev_t *dev, unsigned int firstminor, unsigned int count, char *name);
+
+#include <linux/fs.h>
+
+dev
+  An output-only parameter that will, on successful completion, hold the
+  first number in your allocated range.
+firstminor
+  Should be the requested first minor number to use; it is usually 0.
+count
+  The total number of contiguous device numbers you are requesting.
+name
+  The name of the device that should be associated with this numbering
+  range; it will appear in /proc/devices and sysfs.
+\NewEntry
+void unregister_chrdev_region(dev_t first, unsigned int count);
+
+#include <linux/fs.h>
+
+Regardless of how a device number is allocated, you should free them with this function when you are finished with the device.
+
+first
+  The beginning device number of the range you would like to allocate.
+count
+  The total number of contiguous de vice numbers you are requesting.
+\NewEntry
+int register_chrdev(unsigned int major, const char *name, struct file_operations *fops);
+
+#include <linux/fs.h>
+
+The old (pre-2.6) char device registration routine. It is emulated in the 2.6 kernel but should not be used for new code. If the major number is not 0, it is used unchanged; otherwise a dynamic number is assigned for this device.
+\NewEntry
+int unregister_chrdev(unsigned int major, const char *name);
+
+#include <linux/fs.h>
+
+The old (pre-2.6) char device unregistration routine. Function that undoes a registration made with 'register_chrdev'. Both 'major' and the 'name' string must contain the same value that were used to register the driver.
+\EndFolder
+\NewEntry
+Char Device Registration
+\NewFolder
+\NewEntry
+struct cdev *cdev_alloc();
+
+#include <linux/cdev.h>
+
+Allocates a standalone cdev structure at runtime.
+
+struct cdev has an 'owner' field that should be set to THIS_MODULE.
+
+Usage:
+  struct cdev *my_cdev = cdev_alloc();
+  my_cdev->ops = &my_fops;
+  my_cdev->owner = THIS_MODULE;
+\NewEntry
+void cdev_init(struct cdev *cdev, struct file_operations *fops);
+
+#include <linux/cdev.h>
+
+Initializes the given cdev structure with the given file_operations structure. This is useful when you allocate a cdev structure in a device-specific structure of your own.
+
+struct cdev has an 'owner' field that should be set to THIS_MODULE.
+\NewEntry
+int cdev_add(struct cdev *dev, dev_t num, unsigned int count);
+
+#include <linux/cdev.h>
+
+Registers the character device structure (cdev) with the kernel.
+
+dev
+  The cdev structure to register.
+num
+  The first device number to which this request responds.
+count
+  The number of device numbers that should be associated with the
+  device.
+\NewEntry
+void cdev_del(struct cdev *dev);
+
+#include <linux/cdev.h>
+
+Removes a char device from the system.
+\EndFolder
+\NewEntry
+Inode operations
+\NewFolder
+\NewEntry
+unsigned int imajor(struct inode *inode);
+
+Use this macro to obtain the major device number of a device using its inode.
+\NewEntry
+unsigned int iminor(struct inode *inode);
+
+Use this macro to obtain the minor device number of a device using its inode.
+\EndFolder
+\NewEntry
+Kernel Data Structures
+\NewFolder
+\NewEntry
+file_operations
+
+#include <linux/fs.h>
+
+The file_operations structure contains a collection of function pointers that represents all of the operations that may be performed on files. These operations are mostly system calls and are named accordingly.
+
+The file_operations structure is how a char driver sets up connections between a driver's operations and the device numbers reserved by a particular driver. Each field in the structure must point to the function in the driver that implements a specific operation, or left NULL for unsupported operations. The exact behavior of the kernel when a NULL pointer is specified is different for each function.
+
+NOTE: Variables to a file_operations struct are typically fops.
+
+REFERENCE: For full reference to the function pointer use, see LDD3 pp. 50-53.
+\NewEntry
+file
+
+#include <linux/fs.h>
+
+The file structure represents an open file (not specific to drivers-every open file in the system has a file structure) as an open file descriptor.
+
+NOTE: Variables to a file struct are typically file or filp.
+
+REFERENCE: See LDD3 pp. 53-54 for important field descriptions.
+\NewEntry
+inode
+
+The inode structure is used by the kernel internally to represent files. This is different than the file structure that represents an open file descriptor.
+
+REFERENCE: LDD3 p. 55.
+\EndFolder
+\NewEntry
+Variables
+\NewFolder
+\NewEntry
+dev_t
+
+#include <linux/types.h>
+
+'dev_t' is teh type used to represent device numbers within the kernel.
+\EndFolder
+\NewEntry
+EXPORT_SYMBOL(function_name);
+
+Exports the given function name to the kernel symbol table. This macro must be used outside any other functions and in the global part of the module's file.
+\NewEntry
+EXPORT_SYMBOL_GPL(name);
+
+Exports the given function name to the kernel symbol table. This macro must be used outside any other functions and in the global part of the module's file. This makes the symbol name available only to GPL-licensed modules.
+\NewEntry
+__ - Double underscores
+
+Functions starting with double underscores (__) are generally a low-level component of the interface and should be used with caution.
+\NewEntry
+sys_ - System Calls
+
+The names of system calls are always prefixed with sys_, while no other functions other than system calls will fillow this convention.
+\NewEntry
+kbuild
+
+If the module has more than one source files:
+  obj-m := module.o
+  module-objs := file0.o file1.o
+
+If the module only has one source file:
+  obj-m := file.o
+
+To compile the module with make, it must be invoked within the context of the larger kernel build system:
+  $ make -C /lib/modules/`uname -r` SUBDIRS=$PWD modules
+
+A more generic way to create a makefile so that you don't need to specify the kernel build directory and your module directory is as follows:
+  # If KERNELRELEASE is defined, we've been invoked from the kernel
+  # build system and can use its language.
+  ifneq ($(KERNELRELEASE),)
+  	obj-m := hello.o
+
+  # Otherwise we were called directly from the command line; invoke the
+  # kernel build system.
+  else
+  	KERNELDIR ?= /lib/modules/$(shell uname -r)/build
+  	PWD := $(shell pwd)
+
+  default:
+  	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules
+
+  endif
+\NewEntry
+Headers
+\NewFolder
+\NewEntry
+linux/module.h
+
+#include <linux/module.h>
+
+This is required for all types of modules. It includes the minimal required functions for loadable modules.
+\NewEntry
+linux/init.h
+
+#include <linux/init.h>
+
+init.h is used to specify your initialization and cleanup functions. This is also used by most every loadable module.
+\NewEntry
+linux/moduleparam.h
+
+#include <linux/moduleparam.h>
+
+Most modules include this header to enable the passing of parameters to the module at load time.
+\NewEntry
+linux/version.h
+
+#include <linux/version.h>
+
+A header file containing information on the version of the kernel being built.
+\NewEntry
+linux/sched.h
+
+#include <linux/sched.h>
+
+struct task_struct *current;
+\NewEntry
+linux/kernel.h
+
+#include <linux/kernel.h>
+
+int printk(const char *fmt, ...);
+container_of(pointer, container_type, container_field);
+\NewEntry
+linux/types.h
+
+#include <linux/types.h>
+
+dev_t
+  Used to hold device numbers--both the major and minor parts.
+\NewEntry
+linux/kdev_t.h
+
+#include <linux/kdev_t.h>
+
+MAJOR(dev_t dev);
+MINOR(dev_t dev);
+MKDEV(int major, int minor);
+\NewEntry
+linux/fs.h
+
+#include <linux/fs.h>
+
+The "filesystem" header is the header required for writing device drivers.
+
+int register_chrdev_region(dev_t first, unsigned int count, char *name);
+\NewEntry
+asm/uaccess.h
+
+User space memory access functions
+\EndFolder

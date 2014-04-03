@@ -1,0 +1,407 @@
+Subversion HOWTO
+
+Subversion website: http://svnbook.red-bean.com/
+Subversion O'Reilly book: http://svnbook.red-bean.com/
+
+Updated for subversion-1.1.0
+\NewEntry
+Server Configuration
+\NewFolder
+\NewEntry
+Install
+
+Download the latest source packages from the Subversion repository and use the following commands to compile and install Subversion.
+
+***** Begin Code Block *****
+./configure --prefix=/usr --mandir=/usr/share
+make
+make install
+***** End Code Block *****
+
+Command explanations:
+  --prefix=/usr: This will install the subversion package in relation to
+      the `/usr' directory.
+  --mandir=/usr/share: This will ensure that the man pages are installed
+      in the standard directory, rather than /usr/man.
+
+See http://www.linuxfromscratch.org/blfs/view/cvs/basicnet/subversion.html for the latest directions and dependencies for compiling subversion, or simply use the pre-packaged version that came with you version of Linux, BSD, etc.
+\NewEntry
+Configuration
+
+This configuration will cover creating subversion access for a general UNIX server with many users that each need a seperate repository. Further, each user will need his/her repository to be read/write only by his/herself. However, it must be possible for repositories to become shared among the users of a system.
+
+First, create wrapper scripts for `svn', `svnserve', `svnlook', and `svnadmin' that will force a umask of 002.
+
+***** Begin Code Block *****
+mv /usr/bin/svn /usr/bin/svn.orig
+cat > /usr/bin/svn << "EOF"
+#!/bin/sh
+umask 002
+/usr/bin/svn.orig "$@"
+EOF
+chmod 0755 /usr/bin/svn
+***** End Code Block *****
+
+***** Begin Code Block *****
+mv /usr/bin/svnserve /usr/bin/svnserve.orig
+cat > /usr/bin/svnserve << "EOF"
+#!/bin/sh
+umask 002
+/usr/bin/svnserve.orig "$@"
+EOF
+chmod 0755 /usr/bin/svnserve
+***** End Code Block *****
+
+***** Begin Code Block *****
+mv /usr/bin/svnlook /usr/bin/svnlook.orig
+cat > /usr/bin/svnlook << "EOF"
+#!/bin/sh
+umask 002
+/usr/bin/svnlook.orig "$@"
+EOF
+chmod 0755 /usr/bin/svnlook
+***** End Code Block *****
+
+***** Begin Code Block *****
+mv /usr/bin/svnadmin /usr/bin/svnadmin.orig
+cat > /usr/bin/svnadmin << "EOF"
+#!/bin/sh
+umask 002
+/usr/bin/svnadmin.orig "$@"
+EOF
+chmod 0755 /usr/bin/svnadmin
+***** End Code Block *****
+\NewEntry
+Access Rights
+
+Subversion authentication can be a nighmare. Be sure to read Chapter's 5 and 6 of the subversion book <http://svnbook.red-bean.com> to completely understand all of the options you have to create a subversion server, and especially how things relate to authentication.
+
+I am totally relying on proper UNIX user/group management and pre-existing SSH access to achieve subversion access from remote (or local) clients.
+
+First, create special subversion users and groups. You may want to specify these in the "system" range of UID and GID (this will vary from server to server, and is at the judgement of the server admin). This user and group may be used as the default if your existing users and groups aren't setup to allow read/write access together.
+
+With Linux addgroup/groupadd utilities:
+
+***** Begin Code Block *****
+addgroup --system svn
+groupadd -g 105 svn
+useradd -d /home/svn -m -g svn -s /bin/false svn
+***** End Code Block *****
+
+With BSD adduser utility (creates both user and group):
+
+***** Begin Code Block *****
+adduser --system --disabled-login --group \
+    --home /home/svn --shell /bin/false svn
+***** End Code Block *****
+
+Setup the directory structure that will contain all repositories. I create this directory structure in `/srv', but others may prefer the home directory for 'svn'. The top most subversion directory will be created simply to hold all repositories. This will be located in `/srv/svn' [1].
+
+***** Begin Code Block *****
+install -d -m0755 /srv
+install -d -m0755 -o svn -g svn /srv/svn
+***** End Code Block *****
+
+Now, for each user on the server, create a default repository that will be setup as read/write only by the owner of the repository. This is as simple as running the `svnadmin' command for each user:
+
+***** Begin Code Block *****
+svnadmin create /srv/svn/<username>
+***** End Code Block *****
+
+Change the ownership of the user's repository so that only the single user has read/write access to the entire direcotry, and all files within it. The way you perform this step of ownership will vary between systems and how you need permissions between users to work.
+
+***** Begin Code Block *****
+chown -R <username>:root /srv/svn/<username>
+***** End Code Block *****
+
+Set all directories to be writable for the group. This may be useful when sharing the repository with a group. However, in this case, we are setting the group to be root, and no users have group root. This will ensure a private repository, but make it easier to allow an entire group access to this repository.
+
+***** Begin Code Block *****
+chmod -R g+w /srv/svn/<username>
+***** End Code Block *****
+
+Set the sticky bit for the group on the db directory. This will make it so all files created in the db directory are owned by the user, and the group will be associated with whatever the group is of the db directory (in our case, this is group root to ensure a completely private repository).
+
+***** Begin Code Block *****
+chmod g+s /srv/svn/<username>/db
+***** End Code Block *****
+
+[1] For those wondering why I am using a bizarre name, see the FHS:
+    http://www.pathname.com/fhs/pub/fhs-2.3.html
+\NewEntry
+Create a subversion repository
+
+Create the main subversion repository with the following command. This should only be done once, and all necessary files will be created in this directory.
+
+$ svnadmin create <repository>
+
+If you are using subversion >= 1.1, then you may also create a repository with the new 'fsfs' back-end instead of the default 'bdb' repository type. Use the following options to svnadmin:
+
+$ svnadmin create --fs-type fsfs <repository>
+
+If you make a mistake and need to remove an existing repository use the following command:
+
+$ svnadmin remove <repository>
+\EndFolder
+\NewEntry
+User Tutorial
+\NewFolder
+\NewEntry
+Overview
+
+There is no required way to setup a SVN repository; however, there are certain best practices that the Subversion creators suggest. The main point to understand is that a single Subversion repository is meant to contain a single related project. This project can be source code, documentation, a book, configuration files, or anything that may be required to make serveral revisions.
+
+Considering that a single repository is meant for a single project, the Subversion creators suggest the following directory structure:
+ /
+  trunk/
+  branches/
+  tags/
+
+The top level root ("/"), represents the repository, and there are three directories contained within that called trunk, branches, and tags.
+
+Each of these three directories have a specific purpose, wehre trunk is meant to store the current working version of your project (and consequently is normally the most worked in directory).
+
+The branches directory is used for an advanced functionality of any revision system called "Branching". Branching will allow you to create a new line of revision on an existing repository seperate from the main line that is in trunk. The power of branching is in maintaining two versions of the same project while having tools to make changes between different branches. So, you can branch your project to work on a new feature and merge those changes back into the mainline when the changes get stable. Meanwhile, your unstable branch can merge changes made to a stable branch (or vice-versa).
+
+The tags directory is useful to create a "snapshot" of your repository at some point in time. A tag is easily understood when thinking of a projects version number. Suppose you have a project that you consider stable and want to release your first version 1.0.0. You can use a tag to mark your stable revision as version 1.0.0. Then it becomes trivial to locate your version 1 release in your repository.
+
+See "Chapter 4. Branching and Merging" in the Subversion book:
+  http://svnbook.red-bean.com/svnbook-1.0/ch04.html
+\NewEntry
+Directory Structure on Quasar
+
+By default, you will have access to a single directory within the Subversion server. This directory is located on quasar in the directory `/srv/svn/<username>'.
+
+By default, you will have access to a single Subversion repository on quasar. This repository will provide to you read and write access to only your user account. Thus, your repository will be safe from any other users on quasar. This single repository is also meant to be used for more than one project. So the suggested hierarchy containing branches, tags, and trunk doesn't make a whole lot of sense.
+
+An example hierarchy you may want to consider is to have a remote directory for each of your classes. Within each of these class directories you may want to have different remote directories for labs, and programs. You are probably safe with one directory per lab, but for large projects you may want to create a hierarchy that follows the Subversion recommendation. An example follows below:
+ /
+  cs255/
+   labs/
+    lab1/
+     lab1.java
+     Makefile
+    lab2/
+     lab2.jar
+   programs/
+    program1/
+     pgrm1.java
+     ...
+  cs265/
+   labs/
+    ...
+   programs/
+    ...
+
+So, your single repository is well structured for each class, etc.
+
+However, your top-level repository is probably only readable and writable by you. You are most likely working with a group partner. So, how do you get it so both you and your group partner can get access to a single repository?
+
+FIXME: This i
+\NewEntry
+Importing a new project
+
+Use this command to import your project into the subversion repository as a new module. This only needs to be done once for each new project.
+
+  $ svn import <directory> svn://mppf.cs.uwec.edu/<module_name>
+\NewEntry
+Look at a repository
+
+  quasar$ svnlook tree /srv/svn/<username>
+\NewEntry
+Checkout a repository
+
+  $ svn checkout svn+ssh://quasar.cs.uwec.edu/srv/svn/<username> myrepo
+\NewEntry
+Export a repository
+
+If you need to export a clean directory tree from the repository (useful when creating milestone releases for public view) use the following 'export' command:
+
+  $ svn export svn+ssh://quasar.cs.uwec.edu/svn/<username> <repository>
+\NewEntry
+Basic Work Cycle
+\NewFolder
+\NewEntry
+Checkout
+
+Checkout a working copy of the trunk and save it in a local directory named project:
+
+$ svn checkout svn://mppf.cs.uwec.edu/<module_name>/trunk project
+\NewEntry
+Status
+
+Use this to see what files have been modified since the last revision.
+
+$ svn status
+\NewEntry
+Diff
+
+Create a diff of the working copy against the last revision in the repository. You can use this output to analyze what has been changed in order to make a useful log, or to create a temporary patch for someone else to use while not committing your changes to the repository
+
+$ svn diff
+
+$ svn diff > out.patch
+
+To apply a subversion generated patch do the following:
+
+$ patch -Np0 -i out.patch
+\NewEntry
+Update
+
+Updates your working copy with the repository.
+
+$ svn update
+\NewEntry
+Commit
+
+Commit your working copy into the repository.
+
+$ svn commit
+
+Commit the working copy and use the specified file as the comments
+
+$ svn commit --file <log_file>
+\EndFolder
+\NewEntry
+Cleanup
+
+This will cleanup your working copy if a svn command is interrupted in the midst of a commit.
+
+$ svn cleanup
+\NewEntry
+Modifying the Repository
+\NewFolder
+\NewEntry
+Add
+
+Adds a file to your working copy, and marks this file for addition on the next commit.
+
+$ svn add <file>
+\NewEntry
+Remove
+
+Deletes a file from your local repository. Perform a commit to modify the subversion repository of the changes.
+
+$ svn remove <file>
+\NewEntry
+Copy
+
+Copies a file over to your working copy. You will need to commit the file in order to reflect the addition in the global repository.
+
+$ svn cp <source_file> <destination_file>
+\EndFolder
+\NewEntry
+Branching
+\NewFolder
+\NewEntry
+Creating a branch
+
+To create a branch in an existing repository use the subversion 'copy' command.
+
+$ svn copy <source_url> <destination_url>
+\EndFolder
+\NewEntry
+Tagging
+\NewFolder
+\NewEntry
+Tagging a branch
+
+To create a branch that is tagged with a certain name, use the subversion 'copy' command:
+
+$ svn copy <source_url> <destination_url>
+\EndFolder
+\EndFolder
+\NewEntry
+Subclipse - Eclipse plugin for Subversion
+
+NOTE: This plugin is still under development. Some bugs may exist.
+\NewFolder
+\NewEntry
+Subclipse - Installation
+
+The plugin for subversion integration into eclipse can be found at this website:
+  http://subclipse.tigris.org/
+
+For Eclipse 3, you should be able to use http://subclipse.tigris.org/update as the URL to locate the Eclipse plugin through the Find and Install dialogs. Follow the next few steps to download the subversion plugin for Eclipse:
+
+  1) In Eclipse: Help-> Software Updates -> Find and Install
+
+  2) Select "Search for new features to install", and click Next.
+     <img src="~munozga/images/eclipse-svn1.png">
+
+  3) Press the "New Remote Site" button in the "Update sites to visit"
+     dialog and add "http://subclipse.tigris.org/update" to the list of
+     sites to check for new plugins. (Name it "Subversion plugin".)
+     <img src="~munozga/images/eclipse-svn2.png">
+
+  4) Select the top-most "Subversion plugin" checkbox, and click Next.
+     <img src="~munozga/images/eclipse-svn3.png">
+
+  5) Select the most recent version of the Subclipse plugin, and click
+     Next.
+     <img src="~munozga/images/eclipse-svn4.png">
+
+  6) Accept the Feature License and click Next.
+     <img src="~munozga/images/eclipse-svn5.png">
+
+  7) Choose or add a "Site" that you have write access to, and click
+     Finish.
+     <img src="~munozga/images/eclipse-svn6.png">
+
+  8) When prompted for "Feature verification", click Install.
+
+  9) You will need to re-start Eclipse before using Subclipse.
+
+If you are running Linux (and if you aren't, you should), then open the Preferences menu (Window -> Preferences). Expand the "Team" tree item. You should see a child node called "SVN". Select this and make sure to enable "SVN command line (beta)". This should allow you to enable Subversion access via the command line Subversion utility (which is a stable project). [1]
+    <img src="~munozga/images/eclipse-svn7.png">
+
+[1] See Subclipse FAQ for a way to build your own javahl binary:
+    http://subclipse.tigris.org/#faq
+\NewEntry
+Subclipse - Adding an SVN Repository
+
+To use Subclipse, you will have to view subversion repositories through the SVN perspective, and add a new SVN repository to view:
+
+  1) Open a new SVN perspective by navigating to:
+       Window-> Open Perspective -> Other
+     From this dialog, choose "SVN Repository Exploring" and click OK.
+     <img src="~munozga/images/eclipse-svn8.png">
+
+  2) From the SVN perspective, click on the "Add SVN Repository" button
+     that is located in the upper left-hand cornet of the left sidebar.
+     <img src="~munozga/images/eclipse-svn9.png">
+
+  3) Set the Url to "svn+ssh://quasar.cs.uwec.edu/srv/svn/<repo>", where
+     <repo> is the repository that you are attempting to checkout. For
+     this tutorial this will be your username on quasar. Set the Root
+     url to svn+ssh://quasar.cs.uwec.edu, which specifies the protocol
+     (svn+ssh is the protocol) to use when connecting to the subversion
+     server (the subversion server in this case is quasar.cs.uwec.edu).
+     (You will need to use the Browse button to select the Root url.)
+     Finally, enter your username and password for authentication. This
+     will be your username and password on quasar.
+     <img src="~munozga/images/eclipse-svn10.png">
+
+  4) Click Finish.
+
+You should end up with a SVN perspective with your remote repository:
+  <img src="~munozga/images/eclipse-svn11.png">
+\NewEntry
+Subclipse - Creating a new Eclipse Project
+
+Switch to SVN perspective, and make sure you are connected to a SVN repository (see the section "Adding an SVN Repository" in this tutorial).
+
+First, you may want to create a new remote directory in your subversion repository. To this by right-clicking on the top-level tree node that represents your repository. Then select New -> Remote Folder. Give your folder a name and click Next in the dialog that appears. Optionally, add a comment that will be logged to the subversion when the directory is created. Click Finish.
+
+Now, suppose you want to create a new Eclipse project. While in SVN perspective, right click on the directory you want to create the project in and select New -> Check Out As...
+  <img src="~munozga/images/eclipse-svn12.png">
+
+Fill in all the regular options in the New Project wizard, and click Finish. Switch to the perspective that you can view your new project (let's assume you are creating a Java project, so switch to Java perspective).
+
+Quick Tips
+==========
+
+Your local revision of the repository will not appear in the remote SVN repository until you commit your changes. Make sure to commit your work when you are leaving a remote machine in one of the university labs.
+
+Right click in the project you have checked out, and notice the new options avalible in "Team", "Compare With", and "Replace With". Use these options to commit, update, syncronize, create patches, etc.
+\EndFolder

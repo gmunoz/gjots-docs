@@ -1,0 +1,7984 @@
+Intel C/C++ Compiler - Linux Notes
+
+ICC Version: 8.0
+\NewEntry
+ICC - Unsupported Flags
+\NewFolder
+\NewEntry
+-Wp
+
+icc: Command line remark: option '-W' not supported
+icc: Command line warning: ignoring option '-W'; no argument required
+
+You can use -Wp,option to bypass the compiler driver and pass option directly through to the preprocessor. If option contains commas, it is split into multiple options at the commas. However, many options are modified, translated or interpreted by the compiler driver before being passed to the preprocessor, and -Wp forcibly bypasses this phase. The preprocessor's direct interface is undocumented and subject to change, so whenever possible you should avoid using -Wp and let the driver handle the options instead.
+
+
+This option may cause problems. Look for an ICC equivalent.
+\NewEntry
+-Wstrict-prototypes (C only)
+    Warn if a function is declared or defined without specifying the argument types. (An old-style function definition is permitted without a warning if preceded by a declaration which specifies the argument types.)
+
+Should not affect ICC
+\NewEntry
+-p
+
+icc: Command line warning: ignoring option '-p'; no argument required
+\NewEntry
+-MD
+
+icc: Command line warning: ignoring option '-M'; no argument required
+
+Possible work around since ICC doesn't have exact functionality EXAMPLE:
+
+gcc -Wp,-MD,scripts/.split-include.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer        -o scripts/split-include scripts/split-include.c
+
+icc -MFscripts/.split-include.d -MD -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer        -o scripts/split-include scripts/split-include.c
+
+
+
+\NewEntry
+-fomit-frame-pointer
+
+icc: Command line warning: ignoring unknown option '-fomit-frame-pointer'
+\NewEntry
+-fno-strength-reduce
+
+icc: Command line warning: ignoring unknown option '-fno-strength-reduce'
+\NewEntry
+-fno-builtin
+
+icc: Command line warning: ignoring unknown option '-fno-builtin'
+\NewEntry
+-falign-jumps=1
+
+icc: Command line warning: ignoring unknown option '-falign-jumps=1'
+\NewEntry
+-falign-loops=1
+
+icc: Command line warning: ignoring unknown option '-falign-loops=1'
+\NewEntry
+-falign-functions=1
+
+icc: Command line warning: ignoring unknown option '-falign-functions=1'
+\NewEntry
+-pipe
+\EndFolder
+\NewEntry
+ICC - Overview of Supported Linux Packages
+
+-bash-2.05b$ make calculateicc CC=icc
+icc  -o main.o -c main.c
+icc  -o calculatesine.o -c calculatesine.c
+icc  main.o calculatesine.o -o calculate
+-bash-2.05b$ ./calculate 
+-bash-2.05b$ time calculate
+
+real    0m0.633s
+user    0m0.630s
+sys     0m0.003s
+
+-bash-2.05b$ make calculategcc
+gcc  -o main.o -c main.c
+gcc  -o calculatesine.o -c calculatesine.c
+gcc  main.o calculatesine.o -o calculate \
+-L/opt/intel_cc_80/lib -lsvml -limf -lirc
+-bash-2.05b$ time calculate
+
+real    0m0.515s
+user    0m0.507s
+sys     0m0.007s
+
+---------------------------------------------------------
+WITH OPTIMIZATIONS
+---------------------------------------------------------
+
+-bash-2.05b$ make calculateicc CC=icc CFLAGS="-axW -march=pentium4 -mcpu=pentium4"
+icc -axW -march=pentium4 -mcpu=pentium4 -o main.o -c main.c
+main.c(11) : (col. 2) remark: LOOP WAS VECTORIZED.
+icc -axW -march=pentium4 -mcpu=pentium4 -o calculatesine.o -c calculatesine.c
+calculatesine.c(9) : (col. 2) remark: LOOP WAS VECTORIZED.
+icc -axW -march=pentium4 -mcpu=pentium4 main.o calculatesine.o -o calculate
+-bash-2.05b$ tiem calculate
+-bash: tiem: command not found
+-bash-2.05b$ time calculate
+
+real    0m0.216s
+user    0m0.213s
+sys     0m0.003s
+
+-bash-2.05b$ make calculategcc CFLAGS="-O2 -march=pentium4 -mcpu=pentium4"
+gcc -O2 -march=pentium4 -mcpu=pentium4 -o main.o -c main.c
+gcc -O2 -march=pentium4 -mcpu=pentium4 -o calculatesine.o -c calculatesine.c
+gcc -O2 -march=pentium4 -mcpu=pentium4 main.o calculatesine.o -o calculate \
+-L/opt/intel_cc_80/lib -lsvml -limf -lirc
+-bash-2.05b$ time calculate
+
+real    0m0.439s
+user    0m0.432s
+sys     0m0.007s
+\NewFolder
+\NewEntry
+Supported
+\NewFolder
+\NewEntry
+bash
+\NewFolder
+\NewEntry
+2.05b
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+AR:
+
+  The `configure' script will check this variable for an alternative
+  archiver.
+
+  `make' will use the alternative archiver specified by this variable.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+binutils
+\NewFolder
+\NewEntry
+2.14.90.0.7
+
+Source File Types
+=================
+
+C and C++
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+CXX:
+
+  The `configure' script will check this variable for an alternative C++
+  compiler.
+
+  `make' will use the C++ compiler specified by this variable for
+  compilation.
+
+LD:
+
+  The `configure' script will check this variable for an alternative
+  linker.
+
+  `make' will not explicitly use the linker specified by this variable,
+  but the linking process will be handled by the C compiler.
+
+AR:
+
+  The `configure' script will check this variable for an alternative
+  archiver.
+
+  `make' will use the archiver specified by this variable.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+bison
+\NewFolder
+\NewEntry
+1.875
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+CXX:
+
+  The `configure' script will check this variable for an alternative C++
+  compiler.
+
+  `make' will *not* use the C++ compiler specified by this variable for
+  compilation (no C++ source files compiled).
+
+LD:
+
+  The `configure' script will check this variable for an alternative
+  linker.
+
+  `make' will not explicitly use the linker specified by this variable,
+  but the linking process will be handled by the C compiler.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The environment variable AR is not checked for by the
+  `configure' script and it is not utilized by `make'. However, GNU's
+  `ar' is explicitly used during `make'.
+
+Fix: To fix this problem, replace all occurences of "AR = ar" that
+  exists within the Makefile.in source files.
+\EndFolder
+\NewEntry
+bzip2
+\NewFolder
+\NewEntry
+1.0.2
+
+(no configure script)
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+AR:
+
+  `make' will use the alternative archiver specified by this variable.
+
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+coreutils
+\NewFolder
+\NewEntry
+5.0
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+LD:
+
+  The `configure' script will check this variable for an alternative
+  linker.
+
+  `make' will not explicitly use the linker specified by this variable,
+  but the linking process will be handled by the C compiler.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The environment variable AR is not checked for by the
+  `configure' script and it is not utilized by `make'. However, GNU's
+  `ar' is explicitly used during `make'.
+
+Fix: To fix this problem, replace all occurences of "AR = ar" that
+  exists within the Makefile.in source files.
+\EndFolder
+\NewEntry
+diffutils
+\NewFolder
+\NewEntry
+2.8.1
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+LD:
+
+  The `configure' script will check this variable for an alternative
+  linker.
+
+  `make' will not explicitly use the linker specified by this variable,
+  but the linking process will be handled by the C compiler.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The environment variable AR is not checked for by the
+  `configure' script and it is not utilized by `make'. However, GNU's
+  `ar' is explicitly used during `make'.
+
+Fix: To fix this problem, replace all occurences of "AR = ar" that
+  exists within the Makefile.in source files.
+\EndFolder
+\NewEntry
+e2fsprogs
+\NewFolder
+\NewEntry
+1.34
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+LD:
+
+  The `configure' script will check this variable for an alternative
+  linker.
+
+  `make' will not explicitly use the linker specified by this variable,
+  but the linking process will be handled by the C compiler.
+
+AR:
+
+  The `configure' script will check this variable for an alternative
+  archiver.
+
+  `make' will use the alternative archiver specified by this variable.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+ed
+\NewFolder
+\NewEntry
+0.2
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The environment variable AR is not checked for by the
+  `configure' script and it is not utilized by `make'. However, GNU's
+  `ar' is explicitly used during `make'.
+
+Fix: To fix this problem, replace all occurences of "AR = ar" that
+  exists within the Makefile.in source files.
+\EndFolder
+\NewEntry
+expect
+\NewFolder
+\NewEntry
+5.39.0
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for compilation
+  and linking.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The environment variable AR is not checked for by the
+  `configure' script and it is not utilized by `make'. However, GNU's
+  `ar' is explicitly used during `make'.
+
+Fix: To fix this problem, replace all occurences of "AR = ar" that
+  exists within the Makefile.in source files.
+\EndFolder
+\NewEntry
+file
+\NewFolder
+\NewEntry
+4.06, 4.07
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+AR:
+
+  The `configure' script will not check this variable for an alternative
+  archiver.
+
+  `make' will use the alternative archiver specified by this variable.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+findutils
+\NewFolder
+\NewEntry
+4.1.20
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+LD:
+
+  The `configure' script will check this variable for an alternative
+  linker.
+
+  `make' will not explicitly use the linker specified by this variable,
+  but the linking process will be handled by the C compiler.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The environment variable AR is not checked for by the
+  `configure' script and it is not utilized by `make'. However, GNU's
+  `ar' is explicitly used during `make'.
+
+Fix: To fix this problem, replace all occurences of "AR = ar" that
+  exists within the Makefile.in source files.
+\EndFolder
+\NewEntry
+flex
+\NewFolder
+\NewEntry
+2.5.4a
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The environment variable AR is not checked for by the
+  `configure' script and it is not utilized by `make'. However, GNU's
+  `ar' is explicitly used during `make'.
+
+Fix: To fix this problem, replace all occurences of "AR = ar" that
+  exists within the Makefile.in source files.
+\EndFolder
+\NewEntry
+gawk
+\NewFolder
+\NewEntry
+3.1.3
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+LD:
+
+  The `configure' script will check this variable for an alternative
+  linker.
+
+  `make' will not explicitly use the linker specified by this variable,
+  but the linking process will be handled by the C compiler.
+
+Compilation Problems and Fixes
+==============================
+
+No archives are created in this build, so changing the default archive
+to `xiar' shouldn't really matter. It is simply done for consistency.
+\EndFolder
+\NewEntry
+gettext
+\NewFolder
+\NewEntry
+0.13.1
+
+Source File Types
+=================
+
+C and C++
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for compilation
+  and linking.
+
+CXX:
+
+  The `configure' script will check this variable for an alternative C++
+  compiler.
+
+  `make' will use the C++ compiler specified by this variable for
+  compilation.
+
+LD:
+
+  The `configure' script will check this variable for an alternative
+  linker.
+
+  `make' will not explicitly use the linker specified by this variable, but
+  the linking process will be handled by the C compiler.
+
+AR:
+
+  The `configure' script will check this variable for an alternative
+  archiver.
+
+  `make' will use the archiver specified by this variable.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The following error will occur during `make' on gettext package:
+
+***** Begin Error Block *****
+icpc -shared /usr/lib/crti.o /opt/intel_cc_80/lib/crtxi.o  .libs/lib-asprintf.o .libs/autosprintf.o  -L/opt/intel_cc_80/lib -L/usr/lib -limf -lm -lcprts -lcxa -lunwind -lc -lirc /opt/intel_cc_80/lib/crtxn.o /usr/lib/crtn.o  -Wl,-soname -Wl,libasprintf.so.0 -o .libs/libasprintf.so.0.0.0
+/usr/lib/crti.o(.init+0x0): In function `_init':
+: multiple definition of `_init'
+/usr/lib/crti.o(.init+0x0): first defined here
+/usr/lib/crti.o(.fini+0x0): In function `_fini':
+: multiple definition of `_fini'
+/usr/lib/crti.o(.fini+0x0): first defined here
+/opt/intel_cc_80/lib/crtxi.o(.data+0x8): multiple definition of `__dso_handle'
+/opt/intel_cc_80/lib/crtxi.o(.data+0x8): first defined here
+***** End Error Block *****
+
+Upon close inspection, you can see that there are many things incorrect
+about the `icpc' command listed in the error block listed above. The
+following will be a break down of what is wrong with this command and those
+who are not programmers may have difficulty following along.
+
+First off, take note that both the GCC object files crti.o and crtn.o, and
+the Intel object files crtxi.o and crtxn.o are all being specified to link
+against. This is absolutely wrong. The Intel C/C++ Compiler User Guide
+clearly explains this condition of the incompatibilities between the Intel
+C++ objects and GCC's C++ objects. You cannont reliably link C++ objects
+between the two compilers. However, Intel's GCC compatability mode
+(--cxxlib-gcc) addresses this issue by linking only to GCC's C++ object
+files. This allows for interoperability between the two C++ compilers. But
+this is not what we want. We don't want to link against GCC's object files
+and we especially don't want to link against any object files outside our
+/tools directory.
+
+This leads us to the next obvious problem: -L/usr/lib. This option is
+specified by the `icpc' command in the error block above and will allow
+linking to shared objects outside of our target /tools build directory. We
+want this to be -L/tools/lib.
+
+Finally, in order to avoid "multiple definition of `__dso_handle'" errors
+we need to add the `-nostdlib' option into the `icpc' command. This option
+will only search library directories that are specified at the command
+line. This option should have been there and must have been lost in the ICC
+build because regular GCC builds of gettext will have this option present.
+
+So, the correct code block that we are looking for should look something
+like the following:
+
+***** Correct Code *****
+icpc -shared -nostdlib /opt/intel_cc_80/lib/crtxi.o  .libs/lib-asprintf.o .libs/autosprintf.o  -L/opt/intel_cc_80/lib -L/tools/lib -limf -lm -lcprts -lcxa -lunwind -lc -lirc /opt/intel_cc_80/lib/crtxn.o -Wl,-soname -Wl,libasprintf.so.0 -o .libs/libasprintf.so.0.0.0
+***** End Correct Code *****
+
+To test this out, cd to gettext-runtime/libasprintf and execute the Correct
+Code Block listed above. The libasprintf.so.0.0.0 library should be created
+without error now.
+
+Fix: Now that I have covered in detail what the problem is, it is time to
+  describe a fix.
+\EndFolder
+\NewEntry
+grep
+\NewFolder
+\NewEntry
+2.5.1
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The environment variable AR is not checked for by the
+  `configure' script and it is not utilized by `make'. However, GNU's
+  `ar' is explicitly used during `make'.
+
+Fix: To fix this problem, replace all occurences of "AR = ar" that
+  exists within the Makefile.in source files.
+\EndFolder
+\NewEntry
+groff
+\NewFolder
+\NewEntry
+1.19
+
+Source File Types
+=================
+
+C and C++
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking C object files.
+
+CXX:
+
+  The `configure' script will check this variable for an alternative C++
+  compiler.
+
+  `make' will use the C++ compiler specified by this variable for
+  compilation and linkning C++ object files.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The environment variable AR is not checked for by the
+  `configure' script and it is not utilized by `make'. However, GNU's
+  `ar' is explicitly used during `make'.
+
+Fix: To fix this problem, replace all occurences of "AR=ar" that
+  exists within the Makefile.in source files.
+\EndFolder
+\NewEntry
+gzip
+\NewFolder
+\NewEntry
+1.3.5
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+inetutils
+\NewFolder
+\NewEntry
+1.4.2
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+AR:
+
+  The `configure' script will check this variable for an alternative
+  archiver.
+
+  `make' will use the archiver specified by this variable.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+kbd
+\NewFolder
+\NewEntry
+1.08
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will not check this variable for an alternative
+  C compiler.
+
+  `make' *will* use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+LAME
+\NewFolder
+\NewEntry
+3.93.1
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+LD:
+
+  The `configure' script will check this variable for an alternative
+  linker.
+
+  `make' will not explicitly use the linker specified by this variable, but
+  the linking process will be handled by the C compiler.
+
+AR:
+
+  The `configure' script will *not* check this variable for an alternative
+  archiver from what can be seen by the configure output.
+
+  `make' *will* use the archiver specified by this variable.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+less
+\NewFolder
+\NewEntry
+381
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+\EndFolder
+\NewEntry
+lfs-utils
+\NewFolder
+\NewEntry
+0.4.2
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+libtool
+\NewFolder
+\NewEntry
+1.5
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+CXX:
+
+  The `configure' script will check this variable for an alternative C++
+  compiler.
+
+  `make' will not use the C++ compiler specified by this variable for
+  compilation (none of the C++ files are actually compiled).
+
+LD:
+
+  The `configure' script will check this variable for an alternative
+  linker.
+
+  `make' will not explicitly use the linker specified by this variable,
+  but the linking process will be handled by the C compiler.
+
+AR:
+
+  The `configure' script will check this variable for an alternative
+  archiver.
+
+  `make' will use the archiver specified by this variable.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+m4
+\NewFolder
+\NewEntry
+1.4
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The environment variable AR is not checked for by the
+  `configure' script and it is not utilized by `make'. However, GNU's
+  `ar' is explicitly used during `make'.
+
+Fix: To fix this problem, replace all occurences of "AR = ar" that
+  exists within the Makefile.in source files.
+\EndFolder
+\NewEntry
+make
+\NewFolder
+\NewEntry
+3.80
+
+Source File Types
+=================
+
+C and C++
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+LD:
+
+  The `configure' script will check this variable for an alternative
+  linker.
+
+  `make' will not explicitly use the linker specified by this variable,
+  but the linking process will be handled by the C compiler.
+
+AR:
+
+  The `configure' script will check this variable for an alternative
+  archiver.
+
+  `make' not will use the archiver (no archives created).
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+man
+\NewFolder
+\NewEntry
+1.5m2
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will not explicitly check this variable for an
+  alternative C compiler by the output that it creates.
+
+  `make' *will* use the C compiler specified by this variable for
+  compilation and linking (even though it cannot be seen by the output
+  by configure).
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+NASM
+\NewFolder
+\NewEntry
+0.98.38
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+ncurses
+\NewFolder
+\NewEntry
+5.3
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+CXX:
+
+  The `configure' script will check this variable for an alternative C++
+  compiler.
+
+  `make' will use the C++ compiler specified by this variable for
+  compilation.
+
+LD:
+
+  The `configure' script will check this variable for an alternative
+  linker.
+
+  `make' will not explicitly use the linker specified by this variable,
+  but the linking process will be handled by the C/C++ compiler.
+
+AR:
+
+  The `configure' script will check this variable for an alternative
+  archiver.
+
+  `make' will use the archiver specified by this variable.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+net-tools
+\NewFolder
+\NewEntry
+1.60
+
+(no configure script)
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+AR:
+
+  `make' will use the alternative archiver specified by this variable.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+openssh
+\NewFolder
+\NewEntry
+3.7.1p2
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The environment variable AR is not checked for by the
+  `configure' script and it is not utilized by `make'. However, GNU's
+  `ar' is explicitly used during `make'.
+
+Fix: To fix this problem, replace all occurences of "AR=/usr/bin/ar" that
+  exists within the Makefile.in source files.
+
+Problem: Specifying LD=xild will actually break the build with:
+    xild -o ssh ssh.o readconf.o clientloop.o sshtty.o sshconnect.o
+    sshconnect1.o sshconnect2.o -L. -Lopenbsd-compat/  -lssh -lopenbsd-compat
+    -lutil -lz -lnsl  -lcrypto -lcrypt ^M
+    xild: executing 'ld'^M
+    ld: warning: cannot find entry symbol _start; defaulting to 0804a100^M
+    ssh.o(.text+0x278): In function `main':
+	: undefined reference to `__intel_proc_init'
+
+Fix: Make sure to unset LD before you perform this build as this
+  environemnt variable will cause a linking problem. We want the linking to
+  occur by the compiler (whether it is gcc or icc). The compiler will link
+  the binaries together correctly in this situation.
+
+\EndFolder
+\NewEntry
+openssl
+\NewFolder
+\NewEntry
+0.9.7c
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+None utilized (see below for fix).
+
+Compilation Problems and Fixes
+==============================
+
+Problem: Openssl doesn't attempt to use any alternative compiler specified
+  by the environment variable CC. Openssl's configuration doesn't work
+  exactly the same way as others.
+
+Fix: Openssl's configuration doesn't work exactly the same way as most
+  others. Howerver, the fix is quite simple. Openssl is set up to configure
+  and compile on *lots* of target architecture/compiler combinations. It is
+  not configured for use with ICC explicitly, so we just need to add a
+  configure target similar to that of the default that will be utilized
+  on linux with gcc. To fix this, edit the `Configure' script to add a new
+  target `linux-elf-icc'. Use the `linux-elf' as a starting point, simply
+  give it the new name and explicitly specify the use of icc instead of
+  gcc. Then, instead of running `./config' run, `./Configure linux-elf-icc
+  ..." on the command line.
+
+Problem: By adding the above fix to compile with an alternative the
+  experimental feature of building shared librareis will break the `make'
+  of this package. It will simply hang when "Doing certs".
+
+Fix: Do not build shared libraries. Hopefully this feature will be better
+  supported in later releases (as stated in the INSTALL documentations
+  about shared libraries).
+
+Problem: Openssl doesn't attempt to use the alternative archiver specified
+  by the environment variable AR.
+
+Fix: To fix this problem, replace all occurences of "AR = ar" that
+  exists within the Makefile.in source files.
+\EndFolder
+\NewEntry
+patch
+\NewFolder
+\NewEntry
+2.5.4
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+perl
+\NewFolder
+\NewEntry
+5.8.2
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The environment variable AR is not checked for by the
+  `configure' script and it is not utilized by `make'. However, GNU's
+  `ar' is explicitly used during `make'.
+
+Fix: To fix this problem, replace all occurences of "AR = ar" that
+  exists within the Makefile.in source files.
+\EndFolder
+\NewEntry
+procinfo
+\NewFolder
+\NewEntry
+18
+
+(no configure script)
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+procps - PROBLEMS (FIX ME)
+\NewFolder
+\NewEntry
+2.0.18
+
+(no configure script)
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+psmisc
+\NewFolder
+\NewEntry
+21.4
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+CXX:
+
+  The `configure' script will check this variable for an alternative C++
+  compiler.
+
+  `make' will *not* use the C++ compiler specified by this variable for
+  compilation (no c++ source files).
+
+LD:
+
+  The `configure' script will check this variable for an alternative
+  linker.
+
+  `make' will not explicitly use the linker specified by this variable,
+  but the linking process will be handled by the C compiler.
+
+AR:
+
+  The `configure' script will check this variable for an alternative
+  archiver.
+
+  `make' will *not* use the archiver specified by this variable (no
+  archives created).
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+reiserfsprogs
+\NewFolder
+\NewEntry
+3.6.11
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The environment variable AR is not checked for by the
+  `configure' script and it is not utilized by `make'. However, GNU's
+  `ar' is explicitly used during `make'.
+
+Fix: To fix this problem, replace all occurences of "AR = ar" that
+  exists within the Makefile.in source files.
+\EndFolder
+\NewEntry
+Screen
+\NewFolder
+\NewEntry
+4.0.1
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+sed
+\NewFolder
+\NewEntry
+4.0.8
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The environment variable AR is not checked for by the
+  `configure' script and it is not utilized by `make'. However, GNU's
+  `ar' is explicitly used during `make'.
+
+Fix: To fix this problem, replace all occurences of "AR = ar" that
+  exists within the Makefile.in source files.
+\EndFolder
+\NewEntry
+shadow
+\NewFolder
+\NewEntry
+4.0.3
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+LD:
+
+  The `configure' script will check this variable for an alternative
+  linker.
+
+  `make' will not explicitly use the linker specified by this variable,
+  but the linking process will be handled by the C compiler.
+
+
+AR:
+
+  The `configure' script *not* will not explicitly check this variable
+  for an alternative archiver (as is visible through the configure
+  output).
+
+  `make' *will* use the archiver specified by this variable.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+sysklogd
+\NewFolder
+\NewEntry
+1.4.1
+
+(no configure script)
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+sysvinit
+\NewFolder
+\NewEntry
+2.85
+
+(no configure script)
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+tar
+\NewFolder
+\NewEntry
+1.13.25
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The environment variable AR is not checked for by the
+  `configure' script and it is not utilized by `make'. However, GNU's
+  `ar' is explicitly used during `make'.
+
+Fix: To fix this problem, replace all occurences of "AR = ar" that
+  exists within the Makefile.in source files.
+\EndFolder
+\NewEntry
+tcl
+\NewFolder
+\NewEntry
+8.4.5
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+AR:
+
+  The `configure' script will check this variable for an alternative
+  archiver.
+
+  `make' will use the archiver specified by this variable.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The file compat/strstr.c contains a syntax error where the
+  identifier "NULL" is undefined. This is simply due to the fact that,
+  at the time of this files compilation, NULL is indeed not defined
+  (i.e. not within the scope of this file when it is compiled).
+
+Fix: On Linux, the include statement `#include <stddef.h>' will define
+  the identifier "NULL". To fix this error, add this include statement
+  to the top of the compat/strstr.c file.
+
+Problem: The function `fixstrtod' is declared twice during compilation
+  of the file compat/fixstrtod.c. This causes a multiple definition
+  error during the linking stage containing the files in question.
+
+Fix: To fix this error remove the internal definition of the function
+  `fixstrtod' from the compat/fixstrtod.c file.
+\EndFolder
+\NewEntry
+texinfo
+\NewFolder
+\NewEntry
+4.6
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+LD:
+
+  The `configure' script will check this variable for an alternative
+  linker.
+
+  `make' will not explicitly use the linker specified by this variable,
+  but the linking process will be handled by the C compiler.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The environment variable AR is not checked for by the
+  `configure' script and it is not utilized by `make'. However, GNU's
+  `ar' is explicitly used during `make'.
+
+Fix: To fix this problem, replace all occurences of "AR = ar" that
+  exists within the Makefile.in source files.
+\EndFolder
+\NewEntry
+util-linux
+\NewFolder
+\NewEntry
+2.12
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+None checked for or utilized without intervention. C compiler will be
+used for linking.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The C compiler needs to be modified from the file `make_include'
+  that is located at the top level of the source directory.
+
+Fix: Use sed hack to modify the variable from the command line.
+\EndFolder
+\NewEntry
+vim
+\NewFolder
+\NewEntry
+6.2
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+Compilation Problems and Fixes
+==============================
+
+none
+\EndFolder
+\NewEntry
+zlib
+\NewFolder
+\NewEntry
+1.2.1
+
+4.6
+
+Source File Types
+=================
+
+C
+
+Environment Variables
+=====================
+
+CC:
+
+  The `configure' script will check this variable for an alternative C
+  compiler.
+
+  `make' will use the C compiler specified by this variable for
+  compilation and linking.
+
+LDSHARED:
+
+  This is the environemnt variable that will enable the building of
+  shared libraries correctly. Set to `LDSHARED=icc -shared'.
+
+AR:
+
+  Not checked for by `configure' but this environement variable will be
+  utilized by `make' to override the default archiver.
+
+Compilation Problems and Fixes
+==============================
+
+Problem: The zlib shared libraries will fail to build correctly.
+
+Fix: To fix this problem, make sure to set the environment variable
+  LDSHARED=icc -shared. This will make sure that the libraries are
+  created with icc as shared objects.
+
+Problem: On the second `make' command, the build will fail on executing
+  the archiver `ar' (which is used indirectly by Intel's `xiar'). This
+  failure is due to the fact that by specifying an alternative archiver
+  the options 'rc' are lost, and they need to be used for a valid build.
+
+Fix: To fix this problem use `AR="xiar rc"' when configuring zlib (use
+  this option only on the second configure, make of LFS).
+\EndFolder
+\EndFolder
+\NewEntry
+Unsupported
+
+The packages listed below were unable to be compiled successfully with
+the Intel C/C++ compiler.
+\NewFolder
+\NewEntry
+grub-0.93
+
+This package is highly sensitive even when compiling with gcc. Not too
+surprised it failed. I also don't see it as too big of a deal considering
+it is a boot loader (not used widely, and performance isn't an issue).
+\NewEntry
+glibc-2.3-20031230
+
+This package is highly dependent on gcc. I didn't put too much effort
+into getting this compiled with ICC. As far as I am concerned, it is
+good to have this package compiled with GCC.
+\NewEntry
+module-init-tools-0.9.15-pre4
+
+Surprised that this doesn't compile... look into this one.
+
+configure
+=========
+
+CC=icc LD=xild AR=xiar ./configure --prefix=/
+icc was picked up. xild, xiar, and icpc weren't checked for.
+
+make
+====
+
+Make fails when compiling with icc. It fails with linker errors
+(undefined references to ...). It could be a result of unsupported flags
+that are required for compilation, although this is unconfirmed.
+
+Compiled with gcc here.
+\EndFolder
+\NewEntry
+Do Not Apply
+
+The following packages either were not tested with the Intel C/C++
+compiler or it doesn't make any sense to compile them with ICC.
+\NewFolder
+\NewEntry
+autoconf-2.59
+
+Does not contain any C/C++ files for compilation.
+\NewEntry
+automake-1.8
+
+Does not contain any C/C++ files for compilation.
+\NewEntry
+dejagnu-1.4.3
+
+Does not contain any C/C++ files for compilation. However both the CC and
+CXX variables will be detected.
+\NewEntry
+gcc-2.95.3
+
+It doesn't make any sense to me to compile this package with a different
+compiler. This package remains untested with ICC.
+\NewEntry
+gcc-3.3.2
+
+It doesn't make any sense to me to compile this package with a different
+compiler. This package remains untested with ICC.
+\NewEntry
+lfs-bootscripts-1.12
+
+Does not contain any C/C++ files for compilation.
+\NewEntry
+man-pages-1.64
+
+Does not contain any C/C++ files for compilation.
+\EndFolder
+\EndFolder
+\NewEntry
+ICC Notes
+\NewFolder
+\NewEntry
+Compiling LFS with ICC
+
+Expecting icc to be a "drop in replacement" for gcc implies icc to be
+integrated well with the *entire* toolchain. However, jumping right into
+a build that attempts to modify the compilation of the toolchain would
+be to assume too much about the compatability of icc.
+
+Because of these concerns, I see breaking up the bootstraping mehtod of
+Linux-based system into the following stages:
+  1) Ensure icc can build all packages for LFS, expect for the following:
+       - glibc
+       - binutils
+       - gcc
+       - linux kernel
+  2) Build LFS according to stage 1 along with binutils. I consider
+     binutils to be the only package in the toolchain worthwile in this
+     stage since glibc is highly dependent on gcc, and compiling gcc with
+     a different compiler seems sort of odd.
+  3) Compile LFS as in  the first 2 stages, plus compiling the linux
+     kernel with icc.
+\NewEntry
+Modify /etc/ld.so.conf
+
+Make sure to add the library path to /etc/ld.so.conf:
+echo "/opt/intel_cc_80/lib" >> /etc/ld.so.conf
+\NewEntry
+xild + ld relationship
+
+It appears that xild uses ld internally. I simply performed an
+xild --version and I got the message that I embedded in my replacement
+for ld!
+
+xild is an ELF 32-bit LSB executable (as it should be), dynamically
+linked with glibc-2.2.5 (hopefully supports glibc-2.3.2). So, it must
+have been compiled in with ld, and it is in fact using it.
+
+bash-2.05b$ ldd /opt/intel/bin/xild 
+ libm.so.6 => /lib/libm.so.6 (0x40019000)
+ libc.so.6 => /lib/libc.so.6 (0x4003c000)
+ /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x40000000)
+\NewEntry
+configure host type
+
+The configure script will normally check for the host type; however,
+sometimes this will fail using icc or just hang the configure script.
+
+The correct host type is: i686-pc-linux-gnu
+
+Replace i686 with whatever arch you are on (see crosscompile hint for
+additional info on the host type - $HOST).
+\NewEntry
+-isystem/opt/intel_cc_80/lib
+
+I had to add the above command to the /opt/intel_cc_80/bin/icc.cfg
+configuration file. This automatically adds this library path to the
+compilers search path when icc is executed. There are some libraries
+located in this directory that will be needed by the most simple icc
+commands.
+
+Ok, I'm not using this now!
+\NewEntry
+GCC -> ICC
+
+gcc -> icc
+g++ -> icpc
+/usr/lib/crti.o -> /opt/intel_cc_80/lib/crtxi.o
+/usr/lib/crtn.o -> /opt/intel_cc_80/lib/crtxn.o
+\EndFolder
+\NewEntry
+LFS Builds With ICC
+
+These are highly experimental build that I will use to find out which
+packages will compile with the new version of the Intel C/C++
+Compiler (version 8.0).
+
+Each package will have two parts to it.
+  1) First, any notes that I would take regularly when doing a build
+     for LFS (e.g. commands used, errors encountered, fixes I used,
+     or check failures).
+  2) Second, notes regarding the use of icc to perform the build
+     (e.g. does configure pick up and use icc well, is libtool
+     used/checked for, icc warnings issued).
+\NewFolder
+\NewEntry
+ICC - Build 1: 2003-12-30
+\NewFolder
+\NewEntry
+LFS-CVS-20031222 + ICC v8.0
+
+Date: 2003-12-30
+
+This is a build of lfs-cvs-20031222 that began on 2003-12-30. The purpose
+of this build is to compile all of the base LFS packages with the Intel
+C/C++ compiler, excluding the toolchain (binutils, glibc, gcc) and the
+linux kernel.
+\NewFolder
+\NewEntry
+Chapter 5
+
+Make sure to `unset CFLAGS CXXFLAGS' before beginning.
+\NewFolder
+\NewEntry
+HJL-binutils-2.14.90.0.7 - Pass 1
+
+The gcc compiler is used for this package as per Stage 1 goal.
+\NewFolder
+\NewEntry
+Install
+
+Compiled with gcc.
+
+***** Begin Code Block *****
+patch -Np1 -i ../binutils-2.14.90.0.7-fix-static-linking.patch
+patch -Np1 -i ../binutils-2.14.90.0.7-posix-head-tail.patch
+mkdir ../binutils-build
+cd ../binutils-build
+../binutils-2.14.90.0.7/configure \
+    --prefix=/tools --disable-nls
+make configure-host
+make LDFLAGS="-all-static"
+make install
+make -C ld clean
+make -C ld LDFLAGS="-all-static" LIB_PATH=/tools/lib
+***** End Code Block *****
+
+or with ICC:
+
+***** Code Block *****
+mkdir ../binutils-build
+cd ../binutils-build
+CC=icc ../binutils-2.14/configure \
+    --prefix=/tools --disable-nls
+make configure-host
+cp Makefile Makefile.bak
+sed 's/LD = ld/LD = xild/g' Makefile.bak > Makefile
+make LDFLAGS="-all-static"
+make install
+make -C ld clean
+make -C ld LDFLAGS="-all-static" LIB_PATH=/tools/lib
+***** End Code Block *****
+
+To modify LD = xild manually, do the following:
+cp Makefile Makefile.bak
+sed 's/LD = ld/LD = xild/g' Makefile.bak > Makefile
+
+Building with the sed hack for xild and leaving it set to ld both
+work. The question is, is xild actually being used in the sed hack,
+and if so, should it be preferred over ld????
+\NewEntry
+icc notes
+
+configure
+=========
+
+The host check will hang the configure script right away. It reports a
+host of "NONE". Somewhere around line 579 this check is performed.
+Possible fix is to hard code the host in: i686-pc-linux-gnu. This
+problem occurs when I modify ld to be a shell script that reports
+extra info to me (to track when it is actually used). So, don't use
+the shell script!
+
+ld is called right away from the configure script from output such as:
+  checking build system type... i686-pc-linux-gnu
+This should probably be using xild. I can confirm that xild is not
+being used by default (by realizing that icc was passed in as the
+compiler), but the include path was appended with the following:
+-L/opt/intel_cc_80/lib, among others.
+
+Recieved the following error:
+*** The command 'icc -o conftest -g -O2   conftest.c' failed.
+*** You must set the environment variable CC to a working compiler.
+This was reached when setting CC=icc or CC=/opt/intel_cc_80/bin/icc
+in as user lfs.
+
+Was unable to use xild as LD=xild, the configure script would hang.
+
+Recieved the following error even though the build path was added to
+/opt/intel_cc_80/bin/icc.cfg:
+./if24311: error while loading shared libraries: libcprts.so.5: cannot open shared object file: No such file or directory
+Ignored this for now. FIX: Add icc library path to /etc/ld.so.conf!
+echo "/opt/intel_cc_80/lib" >> /etc/ld.so.conf
+
+make
+====
+
+Everthing compiled just fine during make. Lots of warnings, but no
+errors.
+
+gcc was never used, only icc. However, I do believe that ld was used
+rather than xild, as I was unable to override LD=xild without the
+configure script hanging on me. See sed hack in installation notes.
+Hacking xild in for ld works on the build just as well as using ld.
+There appears no differences in the build logs.
+
+libtool is used by binutils. It appears to be used for icc as this
+option is included in each command: /bin/sh ./libtool --mode=link icc
+A full line of libtool is as follows:
+/bin/sh ./libtool --mode=link icc -W -Wall -Wstrict-prototypes -Wmissing-prototypes -g -O2 -all-static -o gprof  basic_blocks.o call_graph.o cg_arcs.o cg_dfn.o cg_print.o corefile.o gmon_io.o gprof.o hertz.o hist.o source.o search_list.o symtab.o sym_ids.o utils.o i386.o alpha.o vax.o tahoe.o sparc.o mips.o flat_bl.o bsd_callg_bl.o fsf_callg_bl.o ../bfd/libbfd.la ../libiberty/libiberty.a  
+icc -W -Wall -Wstrict-prototypes -Wmissing-prototypes -g -O2 -static -o gprof basic_blocks.o call_graph.o cg_arcs.o cg_dfn.o cg_print.o corefile.o gmon_io.o gprof.o hertz.o hist.o source.o search_list.o symtab.o sym_ids.o utils.o i386.o alpha.o vax.o tahoe.o sparc.o mips.o flat_bl.o bsd_callg_bl.o fsf_callg_bl.o  ../bfd/.libs/libbfd.a ../libiberty/libiberty.a
+
+make install
+============
+
+libtool is also used here, but I'm not so sure this one is used the
+right way:
+/bin/sh ./libtool  --mode=install /bin/sh /mnt/lfs/src/binutils-2.14/install-sh -c  as-new /tools/bin/as
+\EndFolder
+\NewEntry
+GCC-3.3.2 - Pass 1
+\NewFolder
+\NewEntry
+Install
+
+Used the gcc compiler for this (of course).
+
+***** Code Block *****
+patch -Np1 -i ../gcc-3.3.2-posix-head-tail.patch
+mkdir ../gcc-build
+cd ../gcc-build
+../gcc-3.3.2/configure --prefix=/tools \
+    --with-local-prefix=/tools \
+    --disable-nls --enable-shared \
+    --enable-languages=c
+make BOOT_LDFLAGS="-static" bootstrap
+make install
+ln -sf gcc /tools/bin/cc
+***** End Code Block *****
+\NewEntry
+icc notes
+
+none - nothing is compiled with icc in this step.
+\EndFolder
+\NewEntry
+Linux-2.6.0 headers
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+make mrproper
+make include/linux/version.h
+make include/asm
+mkdir /tools/include/asm
+cp -R include/asm/* /tools/include/asm
+cp -R include/asm-generic /tools/include
+cp -R include/linux /tools/include
+touch /tools/include/linux/autoconf.h
+***** End Code Block *****
+\NewEntry
+icc notes
+
+none - nothing is compiled with icc in this step.
+\EndFolder
+\NewEntry
+Glibc-2.3-20031230
+\NewFolder
+\NewEntry
+Install
+
+This was compiled with gcc (icc will be a bitch).
+
+***** Begin Code Block *****
+patch -Np1 -i ../glibc-2.3-20031101-posix-sort.patch
+mkdir ../glibc-build
+cd ../glibc-build
+../glibc-2.3-20031230/configure --prefix=/tools \
+    --disable-profile --enable-add-ons=nptl \
+    --enable-kernel=current \
+    --with-headers=/tools/include \
+    --with-binutils=/tools/bin \
+    --without-gd --without-cvs --with-tls
+make
+make check
+mkdir /tools/etc
+touch /tools/etc/ld.so.conf
+make install
+mkdir -p /tools/lib/locale
+localedef -i de_DE -f ISO-8859-1 de_DE
+localedef -i de_DE@euro -f ISO-8859-15 de_DE@euro
+localedef -i en_HK -f ISO-8859-1 en_HK
+localedef -i en_PH -f ISO-8859-1 en_PH
+localedef -i en_US -f ISO-8859-1 en_US
+localedef -i es_MX -f ISO-8859-1 es_MX
+localedef -i fr_FR -f ISO-8859-1 fr_FR
+localedef -i fr_FR@euro -f ISO-8859-15 fr_FR@euro
+localedef -i it_IT -f ISO-8859-1 it_IT
+localedef -i ja_JP -f EUC-JP ja_JP
+***** End Code Block *****
+
+Glibc common error notes:
+running configure fragment for nptl/sysdeps/unix/sysv/linux
+running configure fragment for nptl/sysdeps/pthread
+configure: error: working compiler support for visibility attribute is required
+-> If this occurs then you didn't patch gcc correctly for POSIX
+   conformance. See nptl hint for more details.
+\NewEntry
+icc notes
+
+Not compiled with icc.
+
+I would think this package will be more difficult to compile with icc
+than the kernel. I also wonder if it should even be attempted to
+compile with icc? What are the implications, if any?
+
+configure
+=========
+
+The following line in the configure script will break using icc:
+$CC -v 2>&1 | sed -n 's/^.*version \([egcygnustpi-]*[0-9.]*\).*$/\1/p'
+replace it with:
+  ac_prog_version=3.3.1
+This will result in the following configure output:
+  checking version of /opt/intel/bin/icc... 3.3.1, ok
+
+long double check failed with:
+checking size of long double... configure: error: cannot compute sizeof (long double), 77
+
+No matter how I set CC=icc and/or LD=xild I get this error:
+icc -Iinclude -I. -I/mnt/lfs/src/glibc-build  -Ilibio  -I/mnt/lfs/src/glibc-build -Isysdeps/i386/elf -Ilinuxthreads/sysdeps/unix/sysv/linux/i386 -Ilinuxthreads/sysdeps/unix/sysv/linux -Ilinuxthreads/sysdeps/pthread -Isysdeps/pthread -Ilinuxthreads/sysdeps/unix/sysv -Ilinuxthreads/sysdeps/unix -Ilinuxthreads/sysdeps/i386/i686 -Ilinuxthreads/sysdeps/i386 -Isysdeps/unix/sysv/linux/i386 -Isysdeps/unix/sysv/linux -Isysdeps/gnu -Isysdeps/unix/common -Isysdeps/unix/mman -Isysdeps/unix/inet -Isysdeps/unix/sysv/i386 -Isysdeps/unix/sysv -Isysdeps/unix/i386 -Isysdeps/unix -Isysdeps/posix -Isysdeps/i386/i686/fpu -Isysdeps/i386/i686 -Isysdeps/i386/i486 -Isysdeps/i386/fpu -Isysdeps/i386 -Isysdeps/wordsize-32 -Isysdeps/ieee754/ldbl-96 -Isysdeps/ieee754/dbl-64 -Isysdeps/ieee754/flt-32 -Isysdeps/ieee754 -Isysdeps/generic/elf -Isysdeps/generic  -nostdinc -isystem /usr/lib/gcc-lib/i686-pc-linux-gnu/3.3.2/include -isystem /tools/include -E -dM -xc - -o /mnt/lfs/src/glibc-build/bits/stdio_lim.hT
+Command-line error: cannot open makefile dependency file /mnt/lfs/src/glibc-build/bits/stdio_lim.dT /mnt/lfs/src/glibc-build/bits/stdio_lim.st
+
+compilation aborted for /tmp/iccuaZZp9sTdIn_ (code 4)
+make[1]: *** [/mnt/lfs/src/glibc-build/bits/stdio_lim.st] Error 4
+make[1]: Leaving directory `/mnt/lfs/src/glibc-2.3.2'
+make: *** [all] Error 2
+
+This one seems hopeless.
+\EndFolder
+\NewEntry
+"Locking in" Glibc
+
+\NewFolder
+\NewEntry
+Execute command
+
+Execute in binutils-build direcotry:
+
+***** Code Block *****
+make -C ld install
+***** End Code Block *****
+
+Re-adjust the linker:
+
+***** Code Block *****
+SPECFILE=/tools/lib/gcc-lib/*/*/specs
+sed -e 's@ /lib/ld-linux.so.2@ /tools/lib/ld-linux.so.2@g' \
+    $SPECFILE > tempspecfile
+mv -f tempspecfile $SPECFILE
+unset SPECFILE
+rm -f /tools/lib/gcc-lib/*/*/include/{pthread.h,bits/sigthread.h}
+***** End Code Block *****
+
+Test the installation up to this point with the following:
+
+***** Code Block *****
+echo 'main(){}' > dummy.c
+gcc dummy.c
+readelf -l a.out | grep ': /tools'
+rm dummy.c a.out
+***** End Code Block *****
+
+Linker test outputs:
+      [Requesting program interpreter: /tools/lib/ld-linux.so.2]
+\NewEntry
+icc notes
+
+This is a potential *huge* problem. In this stage the binutils linker
+is modified and pointed to only link to libraries under /tools/lib.
+
+Also, the gcc specs file is modified to point to the new dynamic
+linker that exsits under /tools/lib (ld-linux.so).
+
+So, how does this affect building with icc? How will it link to
+libraries? It should be linking to the regular stuff under /lib, etc.
+This will need to be fixed.
+
+However, if xild uses ld, then things might work themselves out a
+little bit. But, if xild is hardcoded to /usr/bin/ld, then things will
+be pretty messed up.
+
+Linker info on icc:
+  echo 'main(){}' > dummy.c
+  icc dummy.c
+  readelf -l a.out | grep ': /tools'
+  rm dummy.c a.out
+
+This will report:
+  [Requesting program interpreter: /lib/ld-linux.so.2]
+
+This verifies what I had expected. I haven't changed the location
+of icc's dynamic linker, so I know this definetly needs to be dealt
+with. If not dealt with, then linking in icc will pull in libraries
+from within /lib, and this defeats the purpose of the bootstrap that
+I am in the middle of.
+
+Possible fixes for icc's dynamic linker:
+  1) Set a symlink from /lib/ld-linux.so.2 -> /tools/lib/ld-linux.so.2
+     This will most likely have a huge impact on programs that still
+     need to use /lib/ld-linux.so.2. This is not a good option.
+  2) Change it internally to icc (like what we do for gcc), although
+     I don't know how to do this yet.
+
+     Ok, I think I found the solution to this problem! icc has the
+     command-line option -dynamic-linker, so execute the testing:
+       echo 'main(){}' > dummy.c
+       icc -dynamic-linker/tools/lib/ld-linux.so.2 dummy.c
+       readelf -l a.out | grep ': /tools'
+       rm dummy.c a.out
+     So, everything built from now on *MUST* use this option to ensure
+     linking with the correct dynamic linker. Make sure to do some
+     more sanity checks on the linker as we go. It may be a good idea
+     to add this to the icc.cfg file, so it is used by default.
+
+This may require the old bootstrap method that LFS was using (the
+so-called less pure method). This may be the best of the worst type
+of situations.
+
+Well, another option is to essentially make the bootstrap method occur
+entirely within the chroot environment. So, perform chapter 6 two
+times. In chapter 5, make enough binaries to chroot in, then compile
+everything in chapter 6 the first time, and re-do chapter 6
+(over-writing everything done in first run through of chapter 6).
+\EndFolder
+\NewEntry
+ICC + dynamic linker
+
+This doesn't seem to work to well. I may need to do the bootstrap
+in chapter 6 twice for this to work. All because of hard-coded paths.
+\NewFolder
+\NewEntry
+Modify /opt/intel_cc_80/bin/icc.cfg,icpc.cfg
+
+From this point on in Chapter 5, the following option needs to be
+added to icc.cfg (performed as root):
+
+***** Begin Code Block *****
+echo "-dynamic-linker/tools/lib/ld-linux.so.2" >> \
+    /opt/intel_cc_80/bin/icc.cfg
+***** End Code Block *****
+
+***** Begin Code Block *****
+echo "-dynamic-linker/tools/lib/ld-linux.so.2" >> \
+    /opt/intel_cc_80/bin/icpc.cfg
+***** End Code Block *****
+
+Make sure `/opt/intel_cc_80/bin/{icc.cfg,icpc.cfg}' actually is the
+location of your icc.cfg file (it should already exist).
+
+Also, make sure not to leave this option in icc.cfg/icpc.cfg when we are
+done (reminder will be later). Otherwise, binaries may have problems
+finding the correct libraries.
+\NewEntry
+export LD_LIBRARY_PATH
+
+In order for the intel dependent libraries to be found by the linker that
+is located at /tools/bin/ld-linux.so.2, you will need to perform the
+following export (it may be easiest to put this in ~/.bashrc):
+
+***** Begin Code Block *****
+export LD_LIBRARY_PATH=/opt/intel_cc_80/lib
+***** End Code Block *****
+
+Now the intel libraries will be able to be found when required at
+linking time and runtime for the new binaries under /tools.
+
+Exporting this variable isn't good practice, but will only be required
+for the use of the binaries under /tools. Once the system is completly
+built it shouldn't be required any longer.
+\EndFolder
+\NewEntry
+Tcl-8.4.5
+
+\NewFolder
+\NewEntry
+Install
+
+***** Code Block *****
+patch -Np1 -i ../tcl8.4.5-icc-strstr.patch
+patch -Np1 -i ../tcl8.4.5-icc-fixstrtod.patch
+cd unix
+CC=icc LD=xild AR=xiar ./configure --prefix=/tools
+make
+LD_LIBRARY_PATH=/opt/intel_cc_80/lib TZ=UTC make test
+make install
+ln -s tclsh8.4 /tools/bin/tclsh
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+The configure script appeared to have run just fine. It picked up and
+checked icc with no errors. Configure picked up xiar, but never checks
+for xild, nor can LD be found in any of the scripts. So, it should be
+good to go.
+
+Libtool wasn't mentioned in the configure script, nor was the use of
+ld.
+
+Interesting that configure reports icc to be a crosscompiler. Is it?
+
+make
+====
+
+When compiling on a rather bare LFS, as user lfs in chapter 5, I got
+the following error:
+
+***** Begin Error Output *****
+icc -pipe -c -O -D__NO_STRING_INLINES -D__NO_MATH_INLINES -DTCL_DBGX= -Wall -Wconversion -Wno-implicit-int -fPIC -I./../generic -I. -fno-inline  -DHAVE_UNISTD_H=1 -DHAVE_LIMITS_H=1 -D_LARGEFILE64_SOURCE=1 -DTCL_WIDE_INT_IS_LONG=1 -DHAVE_GETCWD=1 -DHAVE_OPENDIR=1 -DHAVE_STRSTR=1 -DHAVE_STRTOL=1 -DHAVE_STRTOLL=1 -DHAVE_STRTOULL=1 -DHAVE_TMPNAM=1 -DHAVE_WAITPID=1 -DHAVE_UNISTD_H=1 -DHAVE_SYS_PARAM_H=1 -DHAVE_SYS_TIME_H=1 -DTIME_WITH_SYS_TIME=1 -DHAVE_TM_ZONE=1 -DHAVE_GMTIME_R=1 -DHAVE_LOCALTIME_R=1 -DHAVE_TM_GMTOFF=1 -DHAVE_TIMEZONE_VAR=1 -DHAVE_ST_BLKSIZE=1 -Dstrtod=fixstrtod -DSTDC_HEADERS=1 -DHAVE_SIGNED_CHAR=1 -DHAVE_LANGINFO=1 -DPEEK_XCLOSEIM=1 -DHAVE_SYS_IOCTL_H=1        -DTCL_SHLIB_EXT=\".so\" ./../compat/strstr.c
+icc: Command line warning: ignoring option '-p'; no argument required
+icc: Command line warning: ignoring option '-W'; no argument required
+icc: Command line warning: ignoring option '-W'; no argument required
+./../compat/strstr.c(37): remark #1418: external definition with no prior declaration
+  strstr(string, substring)
+  ^
+
+./../compat/strstr.c(57): remark #279: controlling expression is constant
+        while (1) {
+               ^
+./../compat/strstr.c(61): remark #981: operands are evaluated in unspecified order
+            if (*a++ != *b++) {
+                     ^
+
+./../compat/strstr.c(67): error: identifier "NULL" is undefined
+      return NULL;
+             ^
+
+compilation aborted for ./../compat/strstr.c (code 2)
+make: *** [strstr.o] Error 2
+***** End Error Output *****
+
+This will only occur when the dynamic linker option
+"-dynamic-linker/tools/lib/ld-linux.so.2" is in icc.cfg. And the file
+strstr.c in the tcl source will only be compiled when this option is
+used.
+
+The problem is that the use of the keywork (symbol) NULL is not in the
+scope of this file. So, when compiled the compiler doesn't understand
+what NULL is (hence the error). When compiling this package with gcc,
+the file strstr.c isn't even compiled, but if it were, it would have
+the exact same error (NULL undefined).
+
+FIX: To fix this, I simply add #include <stddef.h> to the top of the
+file in question. This will ensure that NULL is defined in the scope
+of strstr.c. stddef.h is a linux header, and might not exist on platforms
+other than linux. You could also include <stdlib.h> to get the same
+effect, but stdlib.h pulls in much more other than NULL.
+
+I started out without changing ld -> xild. The following error will
+occur (linking error):
+
+***** Begin Error Output *****
+icc -pipe -shared -o libtcl8.4.so  regcomp.o regexec.o regfree.o regerror.o tclAlloc.o tclAsync.o tclBasic.o tclBinary.o tclCkalloc.o tclClock.o tclCmdAH.o tclCmdIL.o tclCmdMZ.o tclCompCmds.o tclCompExpr.o tclCompile.o tclDate.o tclEncoding.o tclEnv.o tclEvent.o tclExecute.o tclFCmd.o tclFileName.o tclGet.o tclHash.o tclHistory.o tclIndexObj.o tclInterp.o tclIO.o tclIOCmd.o tclIOGT.o tclIOSock.o tclIOUtil.o tclLink.o tclListObj.o tclLiteral.o tclLoad.o tclMain.o tclNamesp.o tclNotify.o tclObj.o tclPanic.o tclParse.o tclParseExpr.o tclPipe.o tclPkg.o tclPosixStr.o tclPreserve.o tclProc.o tclRegexp.o tclResolve.o tclResult.o tclScan.o tclStringObj.o tclThread.o tclThreadAlloc.o tclThreadJoin.o tclStubInit.o tclStubLib.o tclTimer.o tclUtf.o tclUtil.o tclVar.o tclUnixChan.o tclUnixEvent.o tclUnixFCmd.o tclUnixFile.o tclUnixPipe.o tclUnixSock.o tclUnixTime.o tclUnixInit.o tclUnixThrd.o  tclUnixNotfy.o memcmp.o strstr.o strtoul.o strtod.o fixstrtod.o tclLoadDl.o  -ldl  -lieee    -Wl,-rpath,/tools/lib
+icc: Command line warning: ignoring option '-p'; no argument required
+fixstrtod.o(.text+0x0): In function `fixstrtod':
+: multiple definition of `fixstrtod'
+strtod.o(.text+0x0): first defined here
+/usr/bin/ld: Warning: size of symbol `fixstrtod' changed from 734 in strtod.o to 66 in fixstrtod.o
+make: *** [libtcl8.4.so] Error 1
+***** End Error Output *****
+
+This error occurs because the function `fixstrtod' is declared twice,
+thus creating a multiple declarations error. This error also occurs in
+the compat/ directory within the tcl source, as the previous error. To
+fix this error simple comment out or remove the implementation of
+`fixstrtod' in fixstrtod.c.
+
+make test
+=========
+
+If you get the following error:
+
+***** Begin Error Output *****
+make[1]: Leaving directory `/mnt/lfs/src/tcl8.4.5/unix'
+LD_LIBRARY_PATH=`pwd`:; export LD_LIBRARY_PATH; \
+TCL_LIBRARY="/mnt/lfs/src/tcl8.4.5/library"; export TCL_LIBRARY; \
+./tcltest ./../tests/all.tcl  
+./tcltest: error while loading shared libraries: libcprts.so.5: cannot open shared object file: No such file or directory
+make: *** [test] Error 127
+***** End Error Output *****
+
+It most likely means that the icc dependent library `libcprts.so.5'
+cannot be located by your linker `/tools/lib/ld-linux.so.2'. The
+`libcprts.so.5' is contained within the icc lib/ directory. To fix this,
+simple add `LD_LIBRARY_PATH=/opt/intel_cc_80/lib' on the command line
+along with make test (prepended).
+
+Results:
+Tests ended at Tue Dec 30 23:17:48 UTC 2003
+all.tcl:    Total   10564   Passed  9692    Skipped 832 Failed  40
+Sourced 129 Test Files.
+Files with failing tests: binary.test execute.test get.test interp.test lindex.test unixInit.test
+Number of tests skipped for each constraint:
+    4   64bitInts
+    4   dontCopyLinks
+    47  emptyTest
+    2   hasIsoLocale
+    21  knownBug
+    1   largefileSupport
+    25  localeRegexp
+    126 macOnly
+    1   macOrWin
+    2   memDebug
+    1   needPST
+    142 nonPortable
+    3   nonRoot
+    376 pcOnly
+    1   singleTestInterp
+    30  testthread
+    1   testwinclock
+    21  testwordend
+    1   umask2
+    3   unknownFailure
+    1   wideIntExpressions
+    1   win
+    13  winOnly
+    5   xdev
+
+These results are better than the previous build that was unable to even
+complete the `make test'.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Expect-5.39.0
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+patch -Np1 -i ../expect-5.39.0-spawn.patch
+CC=icc LD=xild AR=xiar ./configure --prefix=/tools \
+    --with-tcl=/tools/lib --with-x=no
+make
+make test
+make SCRIPTS="" install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+Everything appeard to be picked up ok during configure.
+
+make
+====
+
+No errors
+
+make test
+=========
+
+No compile problems with icc.
+
+Results:
+all.tcl:        Total   25      Passed  25      Skipped 0       Failed  0
+Sourced 7 Test Files.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+DejaGnu-1.4.3
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+patch -Np1 -i ../dejagnu-1.4.3-posix-tail.patch
+CC=icc CXX=icpc LD=xild AR=xiar ./configure --prefix=/tools
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+All phases went good.
+\EndFolder
+\NewEntry
+GCC-3.3.2 - Pass 2
+\NewFolder
+\NewEntry
+Install
+
+Used the gcc compiler for this (of course).
+
+***** End Code Block *****
+patch -Np1 -i ../gcc-3.3.2-posix-head-tail.patch
+patch -Np1 -i ../gcc-3.3.2-no_fixincludes-1.patch
+patch -Np1 -i ../gcc-3.3.2-specs-1.patch
+mkdir ../gcc-build
+cd ../gcc-build
+../gcc-3.3.2/configure --prefix=/tools \
+    --with-local-prefix=/tools \
+    --enable-clocale=gnu --enable-shared \
+    --enable-threads=posix --enable-__cxa_atexit \
+    --enable-languages=c,c++
+make
+make -k check
+../gcc-3.3.2/contrib/test_summary
+make install
+***** End Code Block *****
+\NewEntry
+gcc notes
+
+Nothing is compiled with icc in this step.
+
+make test
+=========
+
+Results:
+        === libstdc++-v3 check-abi Summary ===
+
+# of added symbols:      0
+# of missing symbols:        0
+# of incompatible symbols:   0
+
+        === libstdc++-v3 Summary ===
+
+# of expected passes        453
+# of unexpected successes   24
+# of expected failures      4
+
+Sanity check (readelf -l a.out | grep ': /tools') has expected results:
+      [Requesting program interpreter: /tools/lib/ld-linux.so.2]
+\EndFolder
+\NewEntry
+HJL-binutils-2.14.90.0.7 - Pass 2
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+patch -Np1 -i ../binutils-2.14.90.0.7-posix-head-tail.patch
+patch -Np1 -i ../binutils-2.14.90.0.7-fix-static-linking.patch
+mkdir ../binutils-build
+cd ../binutils-build
+../binutils-2.14.90.0.7/configure --prefix=/tools \
+    --enable-shared --with-lib-path=/tools/lib
+make 
+make check
+make install
+make -C ld clean
+make -C ld LIB_PATH=/usr/lib:/lib
+***** End Code Block *****
+\NewEntry
+gcc notes
+
+Nothing is compiled with icc in this step.
+
+make check
+==========
+
+Results:
+                === ld Summary ===
+
+# of expected passes            195
+# of expected failures          1
+/mnt/lfs/src/binutils-build/ld/ld-new 20031029
+\EndFolder
+\NewEntry
+Gawk-3.1.3
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/tools
+make
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+Both icc and xild are picked up. icpc and xiar aren't checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+ALL TESTS PASSED
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Coreutils-5.0
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/tools
+make
+make RUN_EXPENSIVE_TESTS=yes check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+Both icc and xild are picked up. icpc and xiar aren't checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+All tests passed.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Bzip2-1.0.2
+
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+make PREFIX=/tools CC=icc LD=xild AR=xiar install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+make install
+============
+
+icc and xiar are picked up and xild and icpc aren't checked for.
+Everything installed ok.
+\EndFolder
+\NewEntry
+Gzip-1.3.5
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/tools
+make
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc was picked up, but xiar, xild and icpc were not checked for.
+
+make
+====
+
+No problems.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Diffutils-2.8.1
+
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/tools
+make
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc and xild are picked up. icpc and xiar are not checked for.
+
+make
+====
+
+No problems.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Findutils-4.1.20
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/tools
+make 
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc and xild are picked up. xiar and icpc are not checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+All checks passed.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Make-3.80
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/tools
+make 
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc, xild, and xiar are picked up. icpc is not checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+Unable to run any tests. The test scripts are unable to locate the intel
+specific libraries:
+
+***** Begin Error Block *****
+cd tests && perl ./run_make_tests.pl -make ../make
+pwd: error while loading shared libraries: libcprts.so.5: cannot open shared object file: No such file or directory
+../make: error while loading shared libraries: libcprts.so.5: cannot open shared object file: No such file or directory
+sh: - : invalid option
+Usage:  sh [GNU long option] [option] ...
+    sh [GNU long option] [option] script-file ...
+...
+Finding tests...
+
+features/comments ....................................... Error running  (-1):  -f work/features/comments.mk
+
+Caught signal 127!
+make[2]: *** [check-regression] Error 255
+make[2]: Leaving directory `/mnt/lfs/src/make-3.80'
+make[1]: *** [check-am] Error 2
+make[1]: Leaving directory `/mnt/lfs/src/make-3.80'
+make: *** [check-recursive] Error 1
+lfs:/mnt/lfs/src/make-3.80$ exit
+***** End Error Block *****
+
+This is a simple enough package, and I know why the tests can't even
+begin. Skip the checks for now.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Grep-2.5.1
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/tools \
+    --disable-perl-regexp --with-included-regex
+make 
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc was picked up. icpc, xiar, xild weren't checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+All 10 tests passed
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Sed-4.0.8
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/tools
+make 
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc was picked up. xiar, xild, and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+All 57 tests behaved as expected (4 expected failures)
+
+make install
+============
+
+\EndFolder
+\NewEntry
+Gettext-0.13.1
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+CC=icc CXX=icpc LD=xild AR=xiar ./configure --prefix=/tools
+make
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+This package contains c++ files.
+
+configure
+=========
+
+icc, icpc, xild, and xiar are all checked for and picked up.
+
+make
+====
+
+The following error occurred (with Intel's c++ compiler):
+
+***** Begin Error Block *****
+icpc -DHAVE_CONFIG_H -I. -I. -I. -g -O2 -c autosprintf.cc -o autosprintf.o >/dev/null 2>&1
+/bin/sh ./libtool --mode=link icpc  -g -O2   -o libasprintf.la -rpath /tools/lib  lib-asprintf.lo autosprintf.lo
+icpc -shared /usr/lib/crti.o /opt/intel_cc_80/lib/crtxi.o  .libs/lib-asprintf.o .libs/autosprintf.o  -L/opt/intel_cc_80/lib -L/usr/lib -limf -lm -lcprts -lcxa -lunwind -lc -lirc /opt/intel_cc_80/lib/crtxn.o /usr/lib/crtn.o  -Wl,-soname -Wl,libasprintf.so.0 -o .libs/libasprintf.so.0.0.0
+/usr/lib/crti.o(.init+0x0): In function `_init':
+: multiple definition of `_init'
+/usr/lib/crti.o(.init+0x0): first defined here
+/usr/lib/crti.o(.fini+0x0): In function `_fini':
+: multiple definition of `_fini'
+/usr/lib/crti.o(.fini+0x0): first defined here
+/opt/intel_cc_80/lib/crtxi.o(.data+0x8): multiple definition of `__dso_handle'
+/opt/intel_cc_80/lib/crtxi.o(.data+0x8): first defined here
+make[4]: *** [libasprintf.la] Error 1
+make[4]: Leaving directory `/mnt/lfs/src/gettext-0.13.1/gettext-runtime/libasprintf'
+make[3]: *** [all] Error 2
+make[3]: Leaving directory `/mnt/lfs/src/gettext-0.13.1/gettext-runtime/libasprintf'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory `/mnt/lfs/src/gettext-0.13.1/gettext-runtime'
+make[1]: *** [all] Error 2
+make[1]: Leaving directory `/mnt/lfs/src/gettext-0.13.1/gettext-runtime'
+make: *** [all-recursive] Error 1
+lfs:/mnt/lfs/src/gettext-0.13.1$ exit
+***** End Error Block *****
+
+In the error above, things seem to be getting linked with object files
+from `/usr/lib', which are libraries compiled with gcc. This could be
+a problem of c++ object files compiled with icc and gcc not being able
+to be linked. This could also be a case of multiple libraries being
+linked from from each compiler, hence the multiple definition errors.
+
+Possible Fixes:
+  1) One fix is to use the `-cxxlib-gcc' option with icpc. This option
+     will allow interoperable c++ object files between icpc compiled and
+     g++ compiled object files. Using this fix will rid any existence of
+     the gettext build linking with anything outside of /usr/lib.
+
+make check
+==========
+All 216 tests passed
+(14 tests were not run)
+
+make install
+============
+
+\EndFolder
+\NewEntry
+Ncurses-5.3
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+patch -Np1 -i ../ncurses-5.3-posix-head.patch
+patch -Np1 -i ../ncurses-5.3-etip-2.patch
+CC=icc CXX=icpc LD=xild AR=xiar ./configure --prefix=/tools \
+    --with-shared --without-debug --without-ada --enable-overwrite
+make 
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+This package contains c++ files.
+
+configure
+=========
+
+icc, icpc, xild, and xiar are all checked for and picked up.
+
+make
+====
+
+No problems.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Patch-2.5.4
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/tools
+make 
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc is picked up. xild, xiar, icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Tar-1.13.25
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/tools
+make 
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc was picked up. xild, xiar, and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+All 14 tests passed
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Texinfo-4.6
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/tools
+make 
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc and xild were picked up. xiar and icpc were not checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+All 19 tests passed
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Bash-2.05b
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+patch -Np1 -i ../bash-2.05b-2.patch
+CC=icc LD=xild AR=xiar ./configure --prefix=/tools
+make
+make tests
+make install
+ln -s bash /tools/bin/sh
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc and xiar were picked up. xild and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make tests
+==========
+
+All tests passed.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Util-linux-2.12
+\NewFolder
+\NewEntry
+Install
+
+Added the make target `misc-utils script' and copied over script so I can
+log in chroot environment.
+
+The `util-linux-2.12-2.6-headers.patch' is not required when compiling
+with icc. It is omitted here (normally it is requied when compiling with
+gcc against linux-2.6 headers).
+
+***** End Code Block *****
+cp configure configure.backup
+sed "s@/usr/include@/tools/include@g" configure.backup > configure
+./configure
+cp make_include make_include.bak
+sed -e 's%CC=cc%CC=icc%g' make_include.bak > make_include
+make -C lib
+make -C mount  mount umount
+make -C text-utils  more
+make -C misc-utils script
+cp mount/{,u}mount text-utils/more misc-utils/script /tools/bin
+***** End Code Block *****
+
+Use the sed hack otherwise running `./configure' will have different
+effects than if you were running it with gcc.
+\NewEntry
+icc notes
+
+configure
+=========
+
+`configure' doesn't attempt to pick up any of the variables CC, AR, LD,
+or CXX.
+
+make (all targets)
+==================
+
+I had to do a sed hack to get the inclusion of icc correctly, and using
+icc doesn't required the kernel header patch that gcc requires when
+building against linux-2.6* based headers. Other than that, no problems
+occurred.
+\EndFolder
+\NewEntry
+Perl-5.8.2
+\NewFolder
+\NewEntry
+Install
+
+***** End Code Block *****
+patch -Np1 -i ../perl-5.8.2-libc-1.patch
+CC=icc LD=xild AR=xiar ./configure.gnu --prefix=/tools \
+    -Dstatic_ext='IO Fcntl'
+make perl utilities
+cp perl pod/pod2man /tools/bin
+mkdir -p /tools/lib/perl5/5.8.2
+cp -R lib/* /tools/lib/perl5/5.8.2
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure.gnu
+=============
+
+icc was picked up. xiar, xild, and icpc were not checked for.
+
+make
+====
+
+\EndFolder
+\NewEntry
+intel_cc_80
+
+Before we enter the chroot environment, we will need to extract (copy)
+over the Intel C/C++ compiler to its location in what will becomre our
+root partition.
+
+Remember that the binaries we compiled with icc have hard-coded shared
+library dependencies. To check this, simply use ldd on any one of the
+binaries that you compiled with icc.
+
+Make sure to perform these instructions as root (exit your lfs user
+session).
+\NewFolder
+\NewEntry
+Install
+
+Copy the binaries over to the same directory location that you had it
+under your hosts' root.
+
+***** Begin Code Block *****
+mkdir -p $LFS/opt
+tar xvjpf </path/to/icc-pkg>.tar.bz2 -C $LFS/opt
+***** End Code Block *****
+
+Create some necessary symlinks that will be required in order to chroot
+over in the next chapter.
+
+***** Begin Code Block *****
+ln -s ../../opt/intel_cc_80/lib/libcprts.so.5 /tools/lib
+ln -s ../../opt/intel_cc_80/lib/libcxa.so.5 /tools/lib
+ln -s ../../opt/intel_cc_80/lib/libunwind.so.5 /tools/lib
+***** End Code Block *****
+\EndFolder
+\NewEntry
+Library Sanity Check
+
+Perform the following sanity check to check for any dynamic libraries
+that have unresolved dependencies directed towards the Intel libraries:
+
+***** Begin Code Block *****
+ldd /tools/lib/* 2>&1 > /dev/null | grep "not found"
+***** End Code Block *****
+
+If any results appear, then make sure the relevant symlink is made in
+`/tools/lib'.
+\EndFolder
+\NewEntry
+Chapter 6
+
+No optimizations were used (default).
+\NewFolder
+\NewEntry
+Entering the chroot environment
+
+Make sure you setup the necessary symlinks for the intel libraries in
+the last step in chapter 5, then execute the chroot command.
+
+***** Begin Code Block *****
+chroot $LFS /tools/bin/env -i \
+    HOME=/root TERM=$TERM PS1='\u:\w\$ ' \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin \
+    /tools/bin/bash --login +h
+***** End Code Block *****
+
+\NewEntry
+Changing ownership
+
+***** Begin Code Block *****
+chown -R 0:0 /tools
+chown -R 0:0 /src
+chown -R 0:0 /opt
+***** End Code Block *****
+\NewEntry
+Creating directories
+
+Added the /sys dir and the games directories as specified by the FHS.
+
+***** Begin Code Block *****
+mkdir -p /{bin,boot,dev/{pts,shm},etc/opt,home,lib,mnt,proc,sys} 
+mkdir -p /{root,sbin,tmp,usr/local,var,opt}
+for dirname in /usr /usr/local
+    do
+    mkdir $dirname/{bin,etc,include,lib,sbin,share,src}
+    ln -s share/{man,doc,info} $dirname
+    mkdir $dirname/share/{doc,info,locale,man}
+    mkdir $dirname/share/{misc,terminfo,zoneinfo}
+    mkdir $dirname/share/man/man{1,2,3,4,5,6,7,8}
+done
+mkdir /var/{lock,log,mail,run,spool}
+mkdir -p /var/{tmp,opt,cache,lib/misc,local}
+mkdir /opt/{bin,doc,include,info}
+mkdir -p /opt/{lib,man/man{1,2,3,4,5,6,7,8}}
+mkdir /usr/local/games /usr/share/games
+chmod 0750 /root
+chmod 1777 /tmp /var/tmp
+***** End Code Block *****
+\NewEntry
+Mounting the proc and devpts
+
+***** Begin Code Block *****
+mount proc /proc -t proc
+mount devpts /dev/pts -t devpts
+mount sysfs /sys -t sysfs
+mount tmpfs /dev/shm -t tmpfs
+***** End Code Block *****
+\NewEntry
+Creating essential symlinks
+
+***** Begin Code Block *****
+ln -s /tools/bin/{bash,cat,pwd,stty} /bin
+ln -s /tools/bin/perl /usr/bin
+ln -s /tools/lib/libgcc_s.so.1 /usr/lib
+ln -s bash /bin/sh
+***** End Code Block *****
+\NewEntry
+Creating the passwd and group files
+
+***** Begin Code Block *****
+cat > /etc/passwd << "EOF"
+root:x:0:0:root:/root:/bin/bash
+EOF
+***** End Code Block *****
+
+***** Begin Code Block *****
+cat > /etc/group << "EOF"
+root:x:0:
+bin:x:1:
+sys:x:2:
+kmem:x:3:
+tty:x:4:
+tape:x:5:
+daemon:x:6:
+floppy:x:7:
+disk:x:8:
+lp:x:9:
+dialout:x:10:
+audio:x:11:
+EOF
+***** End Code Block *****
+
+***** Begin Code Block *****
+exec /tools/bin/bash --login +h
+***** End Code Block *****
+\NewEntry
+Makedev-1.7
+
+***** Begin Code Block *****
+bzcat MAKEDEV-1.7.bz2 > /dev/MAKEDEV
+chmod 754 /dev/MAKEDEV
+cd /dev
+./MAKEDEV -v generic-nopty
+***** End Code Block *****
+\NewEntry
+ICC + dynamic linker
+
+Make sure that the icc.cfg and icpc.cfg files specify the alternative
+linker `/tools/lib/ld-linux.so.2'. We will modify this path back to what
+it should be after the compilation of glibc. For now, we still need it to
+point to the alternative library path `/tools/lib'.
+
+If you need to, perform the following commands:
+
+***** Begin Code Block *****
+echo "-dynamic-linker/tools/lib/ld-linux.so.2" >> \
+    /opt/intel_cc_80/bin/icc.cfg
+***** End Code Block *****
+
+***** Begin Code Block *****
+echo "-dynamic-linker/tools/lib/ld-linux.so.2" >> \
+    /opt/intel_cc_80/bin/icpc.cfg
+***** End Code Block *****
+
+Peform the following test to verify the location of the dynamic linker.
+
+***** Begin Code Block *****
+echo 'main(){}' > dummy.c
+gcc dummy.c
+readelf -l a.out | grep ': /tools'
+rm dummy.c a.out
+***** End Code Block *****
+
+The result of the sanity check above should still be:
+      [Requesting program interpreter: /tools/lib/ld-linux.so.2]
+
+The Intel C/C++ compiler hard-codes the path to ld to /usr/bin/ld. This
+file will not yet exist until the compilation of binutils in chapter 6.
+So, right here we will need create a symlink to the version of ld that
+is within the /tools directory:
+
+***** Begin Code Block *****
+ln -s /tools/bin/ld /usr/bin
+***** End Code Block *****
+
+We will also require the environment variable LD_LIBRARY_PATH to be
+reset for the Intel specific libraries.
+
+***** Begin Code Block *****
+export LD_LIBRARY_PATH=/opt/intel_cc_80/lib
+***** End Code Block *****
+\NewEntry
+Psuedo Terminal Check
+
+Verify that psuedo terminals are working correctly:
+
+***** Begin Code Block *****
+expect -c "spawn ls"
+***** End Code Block *****
+
+If you recieve "The system has no more ptys.  Ask your system
+administrator to create more.", then something is wrong.
+\NewEntry
+Install linux-2.6.0 Headers for glibc
+
+***** Begin Code Block *****
+make mrproper
+make include/linux/version.h
+make include/asm
+mkdir /usr/src/glibcheaders
+cp -HR include/asm /usr/src/glibcheaders
+cp -R include/asm-generic /usr/src/glibcheaders
+cp -R include/linux /usr/src/glibcheaders
+touch /usr/src/glibcheaders/linux/autoconf.h
+***** End Code Block *****
+\NewEntry
+Man-pages-1.64
+
+***** Begin Code Block *****
+make install
+***** End Code Block *****
+\NewEntry
+Copy Install-log
+
+Remember to copy staticly-linked version of install-log at this point.
+
+***** Begin Code Block *****
+cp /usr/bin/install-log /mnt/lfs/usr/bin
+cp /etc/install-log.rc /mnt/lfs/etc
+chmod 755 /mnt/lfs/usr/bin/install-log
+chmod 644 /mnt/lfs/etc/install-log.rc
+mkdir /mnt/lfs/var/log/install-log
+chmod 755 /mnt/lfs/var/log/install-log
+***** End Code Block *****
+
+Inside chroot make the .timestamp file:
+
+***** Begin Code Block *****
+touch /var/log/install-log/.timestamp
+***** End Code Block *****
+\NewEntry
+Glibc-2.3-20031230
+\NewFolder
+\NewEntry
+Install
+
+Compiled with gcc.
+
+***** Begin Code Block *****
+patch -Np1 -i ../glibc-2.3-20031101-posix-sort.patch
+mkdir ../glibc-build
+cd ../glibc-build
+../glibc-2.3-20031230/configure --prefix=/usr \
+    --disable-profile --enable-add-ons=nptl \
+    --libexecdir=/usr/lib --with-headers=/usr/src/glibcheaders \
+    --enable-kernel=current --without-cvs --with-tls
+make
+make check
+touch /etc/ld.so.conf
+make install
+mkdir -p /usr/lib/locale
+localedef -i de_DE -f ISO-8859-1 de_DE
+localedef -i de_DE@euro -f ISO-8859-15 de_DE@euro
+localedef -i en_HK -f ISO-8859-1 en_HK
+localedef -i en_PH -f ISO-8859-1 en_PH
+localedef -i en_US -f ISO-8859-1 en_US
+localedef -i es_MX -f ISO-8859-1 es_MX
+localedef -i fr_FR -f ISO-8859-1 fr_FR
+localedef -i fr_FR@euro -f ISO-8859-15 fr_FR@euro
+localedef -i it_IT -f ISO-8859-1 it_IT
+localedef -i ja_JP -f EUC-JP ja_JP
+make -C ../glibc-2.3-20031230/linuxthreads/man
+make -C ../glibc-2.3-20031230/linuxthreads/man install
+***** End Code Block *****
+
+Configure with:
+
+***** Begin Code Block *****
+cat > /etc/nsswitch.conf << "EOF"
+# Begin /etc/nsswitch.conf
+
+passwd: files
+group: files
+shadow: files
+
+publickey: files
+
+hosts: files dns
+networks: files
+
+protocols: db files
+services: db files
+ethers: db files
+rpc: db files
+
+netgroup: db files
+
+# End /etc/nsswitch.conf
+EOF
+tzselect
+cp --remove-destination /usr/share/zoneinfo/America/Chicago /etc/localtime
+cat > /etc/ld.so.conf << "EOF"
+# Begin /etc/ld.so.conf
+
+/usr/local/lib
+/opt/lib
+
+# End /etc/ld.so.conf
+EOF
+***** End Code Block *****
+\NewEntry
+gcc notes
+
+make check
+==========
+
+Results:
+All checks passed
+\EndFolder
+\NewEntry
+glibc-kernheaders-2.4-8.41
+
+***** Begin Code Block *****
+cd usr/include/
+cp -R asm-i386 /usr/include/asm
+cp -R linux /usr/include
+***** End Code Block *****
+\NewEntry
+Re-adjusting the toolchain
+
+***** Begin Code Block *****
+make -C ld INSTALL=/tools/bin/install install
+SPECFILE=/tools/lib/gcc-lib/*/*/specs &&
+sed -e 's@ /tools/lib/ld-linux.so.2@ /lib/ld-linux.so.2@g' \
+    $SPECFILE > newspecfile &&
+mv -f newspecfile $SPECFILE &&
+unset SPECFILE
+***** End Code Block *****
+
+Test environment with:
+
+***** End Code Block *****
+echo 'main(){}' > dummy.c
+gcc dummy.c
+readelf -l a.out | grep ': /lib'
+rm dummy.c a.out
+***** End Code Block *****
+
+Sanity check passed with the expected results:
+      [Requesting program interpreter: /lib/ld-linux.so.2]
+\NewEntry
+Re-adjusting ICC + dynamic linker
+
+Now that the dynamic linker has been installed to its final location,
+remove the configuration options from the icc.cfg and icpc.cfg files
+that set the linker to /tools/lib/ld-linux.so.2.
+
+Execute the following instructions to delete the linker options:
+
+***** End Code Block *****
+cat /opt/intel_cc_80/bin/icc.cfg | sed -e '/-dynamic-linker\/tools\/lib\/ld-linux.so.2/d' - > /opt/intel_cc_80/bin/icc.cfg
+cat /opt/intel_cc_80/bin/icpc.cfg | sed -e '/-dynamic-linker\/tools\/lib\/ld-linux.so.2/d' - > /opt/intel_cc_80/bin/icpc.cfg
+***** End Code Block *****
+\NewEntry
+M4-1.4
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr
+make
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc was picked up. xild, xiar, and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+All checks successful
+
+make install
+============
+
+\EndFolder
+\NewEntry
+Bison-1.875
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+patch -Np1 -i ../bison-1.875-attribute.patch
+CC=icc GXX=icpc LD=xild AR=xiar ./configure --prefix=/usr
+make
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+This package checks for g++.
+
+configure
+=========
+
+icc and xild are picked up. xiar is not checked for. g++ is checked for,
+but the variable used to override it is GXX and *not* CXX. Make sure to
+set GXX=icpc when configuring.
+
+make
+====
+
+No problems.
+
+make check
+==========
+The following error occured during `make check':
+
+***** Begin Error Block *****
+27: reduce.at:212     FAILED near `reduce.at:291'
+...
+## ------------------------------------------------- ##
+## ERROR: Suite unsuccessful, 1 of 104 tests failed. ##
+## ------------------------------------------------- ##
+You may investigate any problem if you feel able to do so, in which
+case the test suite provides a good starting point.
+
+Now, failed tests will be executed again, verbosely, and logged
+in the file testsuite.log.
+## --------------------------- ##
+## GNU Bison 1.875 test suite. ##
+## --------------------------- ##
+27. reduce.at:212: testing Reduced Automaton...
+reduce.at:248: bison not-reduced.y
+reduce.at:260: sed -n '/^Grammar/q;/^$/!p' not-reduced.output
+reduce.at:287: bison reduced.y
+reduce.at:291: sed 's/not-reduced/reduced/g' not-reduced.c
+--- expout  2003-12-31 17:30:02.294383960 +0000
++++ /usr/src/bison-1.875/tests/testsuite.dir/at-stdout  2003-12-31 17:30:02.304382440 +0000
+@@ -1152,7 +1152,7 @@
+ }
+
+-#line 10 "reduced.y"
++#line 17 "reduced.y"
+
+
+
+27. reduce.at:212: FAILED near `reduce.at:291'
+## ------------------------- ##
+## testsuite.log is created. ##
+## ------------------------- ##
+
+Please send `testsuite.log' and all information you think might help:
+
+   To: <bug-bison@gnu.org>
+   Subject: [GNU Bison 1.875] testsuite: 27 failed
+
+make[2]: *** [check-local] Error 1
+make[2]: Leaving directory `/usr/src/bison-1.875/tests'
+make[1]: *** [check-am] Error 2
+make[1]: Leaving directory `/usr/src/bison-1.875/tests'
+make: *** [check-recursive] Error 1
+***** End Error Block *****
+
+Ignore error for now. Not any regressions on further builds. See log
+directory for full testsuite.log file.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Flex-2.5.4a
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr
+make
+make bigcheck
+make install
+ln -s libfl.a /usr/lib/libl.a
+cat > /usr/bin/lex << "EOF"
+#!/bin/sh
+# Begin /usr/bin/lex
+
+exec /usr/bin/flex -l "$@"
+
+# End /usr/bin/lex
+EOF
+chmod 755 /usr/bin/lex
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc was picked up. xild, xiar, and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make bigcheck
+=============
+
+All checks successful
+
+make install
+============
+
+\EndFolder
+\NewEntry
+HJL-binutils-2.14.90.0.7
+\NewFolder
+\NewEntry
+Install
+
+Not compiled with icc in this build.
+
+***** Begin Code Block *****
+patch -Np1 -i ../binutils-2.14.90.0.7-posix-head-tail.patch
+patch -Np1 -i ../binutils-2.14.90.0.7-fix-static-linking.patch
+mkdir ../binutils-build
+cd ../binutils-build
+../binutils-2.14.90.0.7/configure \
+    --prefix=/usr --enable-shared
+make tooldir=/usr
+make check
+make tooldir=/usr install
+cp ../binutils-2.14.90.0.7/include/libiberty.h /usr/include
+***** End Code Block *****
+\NewEntry
+gcc notes
+
+make check
+==========
+
+                === ld Summary ===
+
+# of expected passes            195
+# of expected failures          1
+/usr/src/binutils-build/ld/ld-new 20031029
+\EndFolder
+\NewEntry
+GCC-3.3.2
+\NewFolder
+\NewEntry
+Install
+
+Not compiled with icc.
+
+***** Begin Code Block *****
+patch -Np1 -i ../gcc-3.3.2-posix-head-tail.patch
+patch -Np1 -i ../gcc-3.3.2-no_fixincludes-1.patch
+sed -i 's/install_to_$(INSTALL_DEST) //' libiberty/Makefile.in
+mkdir ../gcc-build
+cd ../gcc-build
+../gcc-3.3.2/configure --prefix=/usr \
+    --enable-shared --enable-threads=posix \
+    --enable-__cxa_atexit --enable-clocale=gnu \
+    --enable-languages=c,c++
+make
+make -k check
+../gcc-3.3.2/contrib/test_summary
+make install
+ln -s ../usr/bin/cpp /lib
+ln -s gcc /usr/bin/cc
+***** End Code Block *****
+\NewEntry
+gcc notes
+
+make check
+==========
+
+        === g++ Summary ===
+
+# of expected passes        8159
+# of unexpected successes   1
+# of expected failures      94
+# of untested testcases     9
+# of unsupported tests      14
+
+        === gcc Summary ===
+
+# of expected passes        21662
+# of unexpected failures    1
+# of expected failures      65
+# of unsupported tests      87
+
+        === libstdc++-v3 check-abi Summary ===
+
+# of added symbols:      0
+# of missing symbols:        0
+# of incompatible symbols:   0
+        === libstdc++-v3 tests ===
+
+        === libstdc++-v3 Summary === 
+
+# of expected passes        453
+# of unexpected successes   24
+# of expected failures      4
+\EndFolder
+\NewEntry
+Coreutils-5.0
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+patch -Np1 -i ../coreutils-5.0-uname.patch
+patch -Np1 -i ../coreutils-5.0-hostname-2.patch
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr
+make
+make install-root
+echo "dummy1:x:1000" >> /etc/group
+echo "dummy2:x:1001:dummy" >> /etc/group
+echo "dummy:x:1000:1000:::/bin/bash" >> /etc/passwd
+make check-root
+su dummy -c "make RUN_EXPENSIVE_TESTS=yes check"
+sed -i.bak '/dummy/d' /etc/passwd /etc/group
+make install
+mv /usr/bin/{basename,cat,chgrp,chmod,chown,cp,dd,df} /bin
+mv /usr/bin/{date,echo,false,head,install,ln,ls} /bin
+mv /usr/bin/{mkdir,mknod,mv,pwd,rm,rmdir,sync} /bin
+mv /usr/bin/{sleep,stty,su,test,touch,true,uname} /bin
+mv /usr/bin/chroot /usr/sbin
+rm /usr/bin/kill
+ln -s test /bin/[
+ln -s ../../bin/install /usr/bin
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc and xild were picked up. xiar and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+All checks passed
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Zlib-1.2.1
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar LDSHARED="icc -shared" ./configure \
+    --prefix=/usr --shared
+make
+make check
+make install
+make clean
+CC=icc LD=xild AR="xiar rc" LDSHARED="icc -shared" ./configure \
+    --prefix=/usr
+make
+make check
+make install
+chmod 644 /usr/lib/libz.a
+mv /usr/lib/libz.so.* /lib
+ln -sf ../../lib/libz.so.1 /usr/lib/libz.so
+***** End Code Block *****
+\NewEntry
+icc notes
+
+This package contains c++ files.
+
+configure
+=========
+
+icc and xiar were picked up. xild and icpc weren't checked for. icc is
+also used for c++. Unless otherwise specified, zlib will use `cc' to
+link its shared libraries. Override this by specifying
+`LDSHARED="icc -shared"'.
+
+make
+====
+
+No problems, just make sure to set LDSHARED as stated above.
+
+On the second make command the build will fail on executing ar (via
+xiar). This is because someplace through the process the xiar command
+lost the options `rc' that are supposed to be used. Use the modified
+xiar instruction as detailed in the build instructions to avoid this
+problem.
+
+make check
+==========
+*** zlib test OK ***
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Lfs-Utils-0.4.2
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr --with-libc
+make
+make install
+cp etc/{services,protocols} /etc
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc was picked up. xiar, xild, and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Findutils-4.1.20
+\NewFolder
+\NewEntry
+Install
+
+Make sure to patch in order to utilize xiar.
+
+***** Begin Code Block *****
+patch -Np1 -i ../findutils-4.1.20-icc-ar.patch
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr \
+    --libexecdir=/usr/lib/locate
+make
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc and xild were picked up. xiar and icpc weren't checked for. xiar
+wasn't checked for or picked up, but ar will be used in this build.
+
+make
+====
+
+GNU's ar was used explicitly in a few places. Use the patch in the
+instructions to fix this behavior.
+
+make check
+==========
+
+All checks passed.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Gawk-3.1.3
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+patch -Np1 -i ../gawk-3.1.3-libexecdir.patch
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr \
+    --libexecdir=/usr/lib/gawk
+make
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc and xild were picked up. xiar and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+ALL TESTS PASSED
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Ncurses-5.3
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+patch -Np1 -i ../ncurses-5.3-posix-head.patch
+patch -Np1 -i ../ncurses-5.3-etip-2.patch
+CC=icc CXX=icpc LD=xild AR=xiar ./configure --prefix=/usr --with-shared \
+    --without-debug
+make
+make install
+chmod 755 /usr/lib/*.5.3
+chmod 644 /usr/lib/libncurses++.a
+mv /usr/lib/libncurses.so.5* /lib
+ln -sf ../../lib/libncurses.so.5 /usr/lib/libncurses.so
+ln -sf libncurses.so /usr/lib/libcurses.so
+***** End Code Block *****
+\NewEntry
+icc notes
+
+This package contains c++ files.
+
+configure
+=========
+
+icc, icpc, xild, and xiar were all checked for and picked up.
+
+make
+====
+
+No problems.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Vim-6.2
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
+echo '#define SYS_GVIMRC_FILE "/etc/gvimrc"' >> src/feature.h
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr
+make
+make test
+make install
+ln -s vim /usr/bin/vi
+cat > /etc/vimrc << "EOF"
+" Begin /etc/vimrc
+
+set nocompatible
+set backspace=2
+syntax on
+
+" End /etc/vimrc
+EOF
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc was picked up. xild, xiar, and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make test
+=========
+
+All checks passed.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Less-381
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr \
+    --bindir=/bin --sysconfdir=/etc
+make
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc was picked up. xild, xiar, and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Groff-1.19
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CC=icc CXX=icpc LD=xild AR=xiar PAGE=letter ./configure --prefix=/usr
+make
+make install
+ln -s soelim /usr/bin/zsoelim
+ln -s eqn /usr/bin/geqn
+ln -s tbl /usr/bin/gtbl
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc and icpc are picked up. xild and xiar are not checked for.
+
+make
+====
+
+No problems.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Sed-4.0.8
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr --bindir=/bin
+make
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc is picked up. xild, xiar, and icpc aren't checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+All 57 tests behaved as expected (4 expected failures)
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Gettext-0.13.1
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+echo "-cxxlib-gcc" >> /opt/intel_cc_80/bin/icpc.cfg
+CC=icc CXX=icpc LD=xild AR=xiar ./configure --prefix=/usr
+make
+make check
+make install
+cat /opt/intel_cc_80/bin/icpc.cfg | sed -e '/-cxxlib-gcc/d' - \
+    > /opt/intel_cc_80/bin/icpc.cfg
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc, icpc, xild, and xiar are all checked for and picked up.
+
+make
+====
+
+The same problem occurs here that occurred in chapter 5. It appears that
+gettext is trying to link with gcc libraries and is unable to so if the
+gcc compatibility options aren't added to icpc.cfg (or via the command
+line options).
+
+make check
+==========
+
+All 214 tests passed
+(16 tests were not run)
+\EndFolder
+\NewEntry
+Net-tools-1.60
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+patch -Np1 -i ../net-tools-1.60-miitool-gcc33-1.patch
+yes "" | make config
+make CC=icc CXX=icpc LD=xild AR=xiar COPTS="-D_GNU_SOURCE -Wall $CFLAGS"
+make update
+***** End Code Block *****
+\NewEntry
+icc notes
+
+make
+====
+
+icc and xiar are picked up and utilized.
+\EndFolder
+\NewEntry
+Inetutils-1.4.2
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+patch -Np1 -i ../inetutils-1.4.2-no_server_man_pages-1.patch
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr \
+    --disable-syslogd \
+    --libexecdir=/usr/sbin --disable-logger \
+    --sysconfdir=/etc --localstatedir=/var \
+    --disable-whois --disable-servers
+make
+make install
+mv /usr/bin/ping /bin
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc and xiar are picked up. xild and icpc aren't checked for.
+
+make
+====
+
+No problems.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Perl-5.8.2
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar ./configure.gnu --prefix=/usr \
+    -Dpager="/bin/less -isR"
+make
+echo "127.0.0.1 localhost $(hostname)" > /etc/hosts
+make test
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure.gnu
+=============
+
+icc was picked up. xild, xiar, and icpc were't checked for.
+
+make
+====
+
+No problems.
+
+make test
+=========
+
+All tests successful.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Texinfo-4.6
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr
+make
+make check
+make install
+make TEXMF=/usr/share/texmf install-tex
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc and xild were picked up. xiar and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make test
+=========
+
+All 19 tests passed
+
+make install
+============
+
+\EndFolder
+\NewEntry
+Autoconf-2.59
+\NewFolder
+\NewEntry
+Install
+
+There is no C/C++ compilation done in this package.
+
+***** Begin Code Block *****
+./configure --prefix=/usr
+make
+make check
+make install
+***** End Code Block *****
+\NewEntry
+notes
+
+make check
+==========
+
+172 tests were successful.
+11 tests were skipped.
+\EndFolder
+\NewEntry
+Automake-1.8
+\NewFolder
+\NewEntry
+Install
+
+There is no C/C++ compilation done in this package.
+
+***** Begin Code Block *****
+./configure --prefix=/usr
+make
+make check
+make install
+***** End Code Block *****
+\NewEntry
+notes
+
+make check
+==========
+
+All 466 tests behaved as expected (3 expected failures)
+(52 tests were not run)
+\EndFolder
+\NewEntry
+Bash-2.05b
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+patch -Np1 -i ../bash-2.05b-2.patch
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr --bindir=/bin
+make
+make tests
+make install
+exec /bin/bash --login +h
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc and xiar were picked up. xild and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make tests
+==========
+
+All tests passed.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+File-4.06
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr
+make
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc and xild were picked up. xiar and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Libtool-1.5
+\NewFolder
+\NewEntry
+Install
+
+This package contains some c++ files.
+
+***** Begin Code Block *****
+CC=icc CXX=icpc LD=xild AR=xiar ./configure --prefix=/usr
+make
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc, icpc, xild, and xiar were all checked for and utilized.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+All 96 tests passed
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Bzip2-1.0.2
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+cp Makefile Makefile.backup
+sed -e 's%$(BIGFILES)%$(BIGFILES) $(OPT)%' \
+    Makefile.backup > Makefile
+cp Makefile-libbz2_so Makefile-libbz2_so.backup
+sed -e 's%$(BIGFILES)%$(BIGFILES) $(OPT)%' \
+    Makefile-libbz2_so.backup > Makefile-libbz2_so
+make -f Makefile-libbz2_so OPT="$CFLAGS" CC=icc LD=xild AR=xiar
+make clean
+make OPT="$CFLAGS" CC=icc LD=xild AR=xiar
+make install
+cp bzip2-shared /bin/bzip2
+cp -a libbz2.so* /lib
+ln -s ../../lib/libbz2.so.1.0 /usr/lib/libbz2.so
+rm /usr/bin/{bunzip2,bzcat,bzip2}
+mv /usr/bin/{bzip2recover,bzless,bzmore} /bin
+ln -s bzip2 /bin/bunzip2
+ln -s bzip2 /bin/bzcat
+***** End Code Block *****
+\NewEntry
+icc notes
+
+\EndFolder
+\NewEntry
+Diffutils-2.8.1
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr
+make
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc and xild are picked up. xiar and icpc are not checked for.
+
+make
+====
+
+No problems.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Ed-0.2
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+patch -Np1 -i ../ed-0.2-mkstemp.patch
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr --exec-prefix=""
+make
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc was picked up. xild, xiar, and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+tests completed successfully.
+
+make install
+============
+
+\EndFolder
+\NewEntry
+Kbd-1.08
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+patch -Np1 -i ../kbd-1.08-more-programs-3.patch
+./configure
+make CFLAGS="$CFLAGS" CC=icc LD=xild AR=xiar
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+Nothing was picked up by this configure script. Issue the commands
+directly to make.
+
+make
+====
+
+Make sure to specify the compiler with this make command, then icc will
+be utilized and no errors/problems will occur.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+E2fsprogs-1.34
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+mkdir ../e2fsprogs-build
+cd ../e2fsprogs-build
+CC=icc LD=xild AR=xiar ../e2fsprogs-1.34/configure --prefix=/usr \
+    --with-root-prefix="" --enable-elf-shlibs
+make
+make check
+make install
+make install-libs
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc, xild, and xiar are picked up. icpc isn't checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+The use of LD_LIBRARY_PATH, as mentioned earlier, is poor practice, and
+this packages' `make check' is a good reason why. The checks for
+e2fsprogs modifies the LD_LIBRARY_PATH variable and causes the Intel
+libraries to be not found. This effect isn't too much of a surprise
+considering the cause.
+
+Expect the following error:
+
+***** Begin Error Code *****
+icc -o tst_byteswap tst_byteswap.o bitops.o ../../lib/libext2fs.a \
+        ../../lib/libcom_err.so
+LD_LIBRARY_PATH=../../lib DYLD_LIBRARY_PATH=../../lib ./tst_badblocks
+./tst_badblocks: error while loading shared libraries: libcprts.so.5: cannot open shared object file: No such file or directory
+make[1]: *** [check] Error 127
+make[1]: Leaving directory `/usr/src/e2fsprogs-build/lib/ext2fs'
+make: *** [check-recursive] Error 1
+***** End Error Code *****
+
+On this build, this `make check' is pretty much ignored. Possible fix
+is to locate the offending code/test and remove its test or fix it some
+other way. Is it possible to add the Intel lib/ path to ld.so.conf at
+this time and have it work correctly?
+
+make install
+============
+
+\EndFolder
+\NewEntry
+Grep-2.5.1
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr --bindir=/bin \
+    --with-included-regex
+make
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc was picked up. xild, xiar, and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+All 10 tests passed
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Grub-0.93
+\NewFolder
+\NewEntry
+Install
+
+Unset CFLAGS/CXXFLAGS in order to compile successfully.
+
+Couldn't get grub to compile with icc, not too surprising that it won't
+compile without modifications. Also, not a big deal, after all it is
+only a bootloader.
+
+Investigate this package compilation later.
+
+***** Begin Code Block *****
+sed -i 's/2 long/2/' stage2/fsys_reiserfs.c
+./configure --prefix=/usr
+make
+make install
+mkdir /boot/grub
+cp /usr/share/grub/i386-pc/stage{1,2} /boot/grub
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc was picked up. xild, xiar, and icpc weren't checked for.
+
+make
+====
+
+Major compile errors occured with `builtins.c'. Unable to finish
+compilation.
+\EndFolder
+\NewEntry
+Gzip-1.3.5
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr
+cp gzexe.in{,.backup}
+sed 's%"BINDIR"%/bin%' gzexe.in.backup > gzexe.in
+make
+make install
+mv /usr/bin/gzip /bin
+rm /usr/bin/{gunzip,zcat}
+ln -s gzip /bin/gunzip
+ln -s gzip /bin/zcat
+ln -s gunzip /bin/uncompress
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc was picked up. xild, xiar, and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Man-1.5m2
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+patch -Np1 -i ../man-1.5m2-80cols.patch
+sed -i 's/-is/&R/' configure
+sed -i 's%MANPATH./usr/man%#&%' src/man.conf.in
+CC=icc LD=xild AR=xiar ./configure -default -confdir=/etc
+make
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+The configure script didn't appear to pick up icc, but it did as the
+make command uses it.
+
+make
+====
+
+No problems.
+
+\EndFolder
+\NewEntry
+Make-3.80
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr
+make
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc, xild, and xiar are picked up. icpc wasn't checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+Unable to perform `make check' with any success:
+
+***** Begin Error Code *****
+cd tests && perl ./run_make_tests.pl -make ../make
+sh: error while loading shared libraries: libcprts.so.5: cannot open shared object file: No such file or directory
+...
+***** End Error Code *****
+
+It is possible that the LD_LIBRARY_PATH isn't in scope when this is run.
+
+Do not perform checks.
+
+make install
+============
+
+\EndFolder
+\NewEntry
+module-init-tools-0.9.15-pre4
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+./configure --prefix=/
+make
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+CC=icc LD=xild AR=xiar ./configure --prefix=/
+icc was picked up. xild, xiar, and icpc weren't checked for.
+
+make
+====
+
+Make fails when compiling with icc. It fails with linker errors
+(undefined references to ...). It could be a result of unsupported flags
+that are required for compilation, although this is unconfirmed.
+
+Compiled with gcc here.
+
+make install
+============
+
+Of course, no problems with gcc.
+\EndFolder
+\NewEntry
+Patch-2.5.4
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr
+make
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc was picked up. xild, xiar, and icpc weren't checked for.
+
+make
+====
+\EndFolder
+\NewEntry
+Procinfo-18
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+make LDLIBS=-lncurses CFLAGS="$CFLAGS" CC=icc LD=xild AR=xiar
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+make
+====
+
+icc was picked up and utilized.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Procps-2.0.18
+\NewFolder
+\NewEntry
+Install
+
+This modified version of procps can be found here:
+http://www.tech9.net/rml/procps/
+and should be better used with nptl.
+
+***** Begin Code Block *****
+patch -Np1 -i ../procps-2.0.18-posix-sort.patch
+cp Makefile Makefile.backup
+sed -e 's%CFLAGS := -O2 -g3%CFLAGS := ${CFLAGS} -g3%' \
+    Makefile.backup > Makefile
+make CC=icc LD=xild AR=xiar
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+make
+====
+
+icc was picked up and utilized.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Psmisc-21.4
+\NewFolder
+\NewEntry
+Install
+
+Unset CFLAGS/CXXFLAGS in order to compile successfully.
+
+***** Begin Code Block *****
+CC=icc CXX=icpc LD=xild AR=xiar ./configure --prefix=/usr --exec-prefix=/
+make
+make install
+mv /bin/pstree* /usr/bin
+ln -sf pstree /usr/bin/pstree.x11
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc, icpc, xild, and xiar are all checked for and picked up.
+
+make
+====
+
+No problems.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Shadow-4.0.3
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+touch /var/run/utmp /var/log/{btmp,lastlog,wtmp}
+chmod 644 /var/run/utmp /var/log/{btmp,lastlog,wtmp}
+touch /usr/bin/passwd
+patch -Np1 -i ../shadow-4.0.3-newgrp-fix.patch
+CC=icc CXX=icpc LD=xild AR=xiar ./configure --prefix=/usr \
+    --libdir=/usr/lib --enable-shared
+make
+make install
+cp etc/{limits,login.access} /etc
+sed -e 's%/var/spool/mail%/var/mail%' \
+    -e 's%#MD5_CRYPT_ENAB.no%MD5_CRYPT_ENAB yes%' \
+    etc/login.defs.linux > /etc/login.defs
+ln -s vipw /usr/sbin/vigr
+rm /bin/vipw
+mv /bin/sg /usr/bin
+mv /usr/lib/lib{shadow,misc}.so.0* /lib
+ln -sf ../../lib/libshadow.so.0 /usr/lib/libshadow.so
+ln -sf ../../lib/libmisc.so.0 /usr/lib/libmisc.so
+mkdir /etc/default
+rm /bin/groups
+/usr/sbin/pwconv
+/usr/sbin/grpconv
+passwd root
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc and xild were picked up. xiar and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Sysklogd-1.4.1
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+make RPM_OPT_FLAGS="$CFLAGS" CC=icc LD=xild AR=xiar
+make install
+cat > /etc/syslog.conf << "EOF"
+# Begin /etc/syslog.conf
+
+auth,authpriv.* -/var/log/auth.log
+*.*;auth,authpriv.none -/var/log/sys.log
+daemon.* -/var/log/daemon.log
+kern.* -/var/log/kern.log
+mail.* -/var/log/mail.log
+user.* -/var/log/user.log
+*.emerg *
+
+# End /etc/syslog.conf
+EOF
+***** End Code Block *****
+\NewEntry
+icc notes
+
+make
+====
+
+icc was picked up by make and utilized.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Sysvinit-2.85
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+patch -Np1 -i ../sysvinit-2.85-posix-chown.patch
+cp src/init.c{,.backup}
+sed 's/Sending processes/& started by init/g' \
+    src/init.c.backup > src/init.c
+make -C src CFLAGS="-Wall -D_GNU_SOURCE $CFLAGS" CC=icc LD=xild AR=xiar
+make -C src install
+***** End Code Block *****
+
+Configure with:
+
+***** Begin Code Block *****
+cat > /etc/inittab << "EOF"
+# Begin /etc/inittab
+
+id:3:initdefault:
+
+si::sysinit:/etc/rc.d/init.d/rc sysinit
+
+l0:0:wait:/etc/rc.d/init.d/rc 0
+l1:S1:wait:/etc/rc.d/init.d/rc 1
+l2:2:wait:/etc/rc.d/init.d/rc 2
+l3:3:wait:/etc/rc.d/init.d/rc 3
+l4:4:wait:/etc/rc.d/init.d/rc 4
+l5:5:wait:/etc/rc.d/init.d/rc 5
+l6:6:wait:/etc/rc.d/init.d/rc 6
+
+ca:12345:ctrlaltdel:/sbin/shutdown -t1 -a -r now
+
+su:S016:once:/sbin/sulogin
+
+1:2345:respawn:/sbin/agetty tty1 9600
+2:2345:respawn:/sbin/agetty tty2 9600
+3:2345:respawn:/sbin/agetty tty3 9600
+4:2345:respawn:/sbin/agetty tty4 9600
+5:2345:respawn:/sbin/agetty tty5 9600
+6:2345:respawn:/sbin/agetty tty6 9600
+
+# End /etc/inittab
+EOF
+***** End Code Block *****
+\NewEntry
+icc notes
+
+make
+====
+
+icc was picked up by make and was utilized.
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Tar-1.13.25
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr \
+    --bindir=/bin --libexecdir=/usr/sbin
+make
+make check
+make install
+***** End Code Block *****
+\NewEntry
+icc notes
+
+configure
+=========
+
+icc was picked up. xild, xiar, and icpc weren't checked for.
+
+make
+====
+
+No problems.
+
+make check
+==========
+
+All 14 tests passed
+
+make install
+============
+
+No problems.
+\EndFolder
+\NewEntry
+Util-linux-2.12
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+cp hwclock/hwclock.c{,.backup}
+sed 's%etc/adjtime%var/lib/hwclock/adjtime%' \
+    hwclock/hwclock.c.backup > hwclock/hwclock.c
+mkdir -p /var/lib/hwclock
+./configure
+cp make_include make_include.bak
+sed -e 's%CC=cc%CC=icc%g' make_include.bak > make_include
+make HAVE_KILL=yes HAVE_SLN=yes
+make HAVE_KILL=yes HAVE_SLN=yes install
+***** End Code Block *****
+
+Use the sed hack to force this package to utilize icc otherwise running
+`./configure' with CC=icc set will have different effects than if you
+were running it with gcc.
+\NewEntry
+icc notes
+
+configure
+=========
+
+`configure' doesn't attempt to pick up any of the variables CC, AR, LD,
+or CXX.
+
+make
+====
+
+I had to do a sed hack to get the inclusion of icc correctly. Other than
+that, no problems exist.
+\EndFolder
+\NewEntry
+GCC-2.95.3
+\NewFolder
+\NewEntry
+Install
+
+Unset CFLAGS CXXFLAGS or set to lower optimization flags that gcc-2.95.3
+can understand.
+
+***** Begin Code Block *****
+patch -Np1 -i ../gcc-2.95.3-2.patch
+patch -Np1 -i ../gcc-2.95.3-no-fixinc.patch
+patch -Np1 -i ../gcc-2.95.3-returntype-fix.patch
+echo timestamp > gcc/cstamp-h.in
+mkdir ../gcc-2-build
+cd ../gcc-2-build
+../gcc-2.95.3/configure --prefix=/opt/gcc-2.95.3 \
+    --enable-shared --enable-languages=c \
+    --enable-threads=posix
+make bootstrap
+make install
+***** End Code Block *****
+\EndFolder
+\NewEntry
+LFS-Bootscripts-1.12
+
+***** Begin Code Block *****
+cp -a rc.d sysconfig /etc
+chown -R root:root /etc/rc.d /etc/sysconfig
+***** End Code Block *****
+\NewEntry
+Revised chroot command
+
+***** Begin Code Block *****
+chroot $LFS /usr/bin/env -i \
+    HOME=/root TERM=$TERM PS1='\u:\w\$ ' \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+    /bin/bash --login
+***** End Code Block *****
+\NewEntry
+ICC Essential Symlinks
+
+Create these links otherwise these Intel based libraries won't be
+located at boot time (or chrooting back over).
+
+***** Begin Code Block *****
+ln -s ../../opt/intel_cc_80/lib/libcprts.so.5 /usr/lib
+ln -s ../../opt/intel_cc_80/lib/libcxa.so.5 /usr/lib
+ln -s ../../opt/intel_cc_80/lib/libunwind.so.5 /usr/lib
+***** End Code Block *****
+\EndFolder
+\NewEntry
+Chapter 8
+\NewFolder
+\NewEntry
+Linux-2.6.0
+
+***** Begin Code Block *****
+make mrproper
+make menuconfig
+make
+make modules_install
+cp arch/i386/boot/bzImage /boot/lfskernel
+cp System.map /boot
+***** End Code Block *****
+\EndFolder
+\EndFolder
+\EndFolder
+\NewEntry
+ICC - Build 2: 2004-01-02
+\NewFolder
+\NewEntry
+LFS-CVS-20040102 + ICC v8.0
+
+Date: 2003-12-30
+
+This is a build of lfs-cvs-20040102 that began on 2004-01-02. The purpose
+of this build is to compile all of the base LFS packages with the Intel
+C/C++ compiler, excluding the toolchain and the linux kernel.
+\NewFolder
+\NewEntry
+Initial ICC Configurations FIXME
+
+From this point on we will be compiling all packages dynamically with ICC
+(with some exceptions of course). Before we continue we will need to set
+up the path to the Intel specific libraries that are located in
+`/opt/intel_cc_80/lib'.
+
+There are several ways that we can achieve this:
+  1) The environment variable LD_LIBRARY_PATH
+  2) 3) Create symlinks from `/usr/lib' to the Intel specific library
+  3) Add Intel's library path to `/etc/ld.so.conf'
+
+Allow me to explain some of the pros and cons of each method as I have
+experienced them. The environment variable LD_LIBRARY_PATH is used
+by the dynamic loader as a comma seperated field of directories that will
+be searched for additional libraries. On the surface this method seems like
+a logical choice but the use of LD_LIBRARY_PATH has become renown
+for being difficult to utilize correctly. See http://www.visi.com/~barr/ldpath.html
+for a point of view on this issue.
+
+The best reason for not using the LD_LIBRARY_PATH variable is the fact
+that several packages will modify it during `make check' causing errors of
+unable to load shared libraries (eg. tcl). So, with respect to building LFS, this
+variable isn't guaranteed to be set properly during some of the most critical
+parts of the build process.
+
+<finish this part>
+The second method is to create symlinks to the Intel libraries; however,
+the Intel libraries will be linked to the path of the
+</finish this part>
+
+The third method to attain a valid library path is to add Intel's library path
+to `/etc/ld.so.conf'. After all, this is exactly why this file exists and it is
+generally accepted to be the best location for library paths. However, during
+my builds I would consistently recieve errors from adding this path to
+ld.so.conf. This is the optimal method and should ensure that the Intel
+libraries will be found without error.
+
+Make sure the Intel library path `/opt/intel_cc_80/lib' is located within
+your `/etc/ld.so.conf' file. Modify your host.:
+
+***** Begin Code Block *****
+cat >> /etc/ld.so.conf << "EOF"
+/opt/intel_cc_80/lib
+EOF
+***** End Code Block *****
+
+Now the intel libraries will be able to be found when required at
+linking time and runtime for the new binaries under /tools.
+\NewEntry
+Chapter 5
+
+Make sure to `unset CFLAGS CXXFLAGS' before beginning.
+\NewFolder
+\NewEntry
+HJL-binutils-2.14.90.0.7 - Pass 1
+
+Compiled with GCC
+
+***** Code Block *****
+patch -Np1 -i ../patches/binutils-2.14.90.0.7-fix-static-linking.patch
+patch -Np1 -i ../patches/binutils-2.14.90.0.7-posix-head-tail.patch
+mkdir ../binutils-build
+cd ../binutils-build
+../binutils-2.14.90.0.7/configure \
+    --prefix=/tools --disable-nls
+make configure-host
+make LDFLAGS="-all-static"
+make install
+make -C ld clean
+make -C ld LDFLAGS="-all-static" LIB_PATH=/tools/lib
+***** End Code Block *****
+\NewEntry
+GCC-3.3.2 - Pass 1
+
+Used the gcc compiler for this (of course).
+
+***** Code Block *****
+patch -Np1 -i ../patches/gcc-3.3.2-posix-head-tail.patch
+mkdir ../gcc-build
+cd ../gcc-build
+../gcc-3.3.2/configure --prefix=/tools \
+    --with-local-prefix=/tools \
+    --disable-nls --enable-shared \
+    --enable-languages=c
+make BOOT_LDFLAGS="-static" bootstrap
+make install
+ln -sf gcc /tools/bin/cc
+***** End Code Block *****
+\NewEntry
+Linux-2.6.0 headers
+
+***** Begin Code Block *****
+make mrproper
+make include/linux/version.h
+make include/asm
+mkdir /tools/include/asm
+cp -R include/asm/* /tools/include/asm
+cp -R include/asm-generic /tools/include
+cp -R include/linux /tools/include
+touch /tools/include/linux/autoconf.h
+***** End Code Block *****
+\NewEntry
+Glibc-2.3-20031230
+
+Install
+
+This was compiled with gcc (compiling with icc would be crazy).
+
+***** Begin Code Block *****
+patch -Np1 -i ../patches/glibc-2.3-20031101-posix-sort.patch
+mkdir ../glibc-build
+cd ../glibc-build
+../glibc-2.3-20031230/configure --prefix=/tools \
+    --disable-profile --enable-add-ons=nptl \
+    --enable-kernel=current \
+    --with-headers=/tools/include \
+    --with-binutils=/tools/bin \
+    --without-gd --without-cvs --with-tls
+make
+make check
+mkdir /tools/etc
+touch /tools/etc/ld.so.conf
+make install
+mkdir -p /tools/lib/locale
+localedef -i de_DE -f ISO-8859-1 de_DE
+localedef -i de_DE@euro -f ISO-8859-15 de_DE@euro
+localedef -i en_HK -f ISO-8859-1 en_HK
+localedef -i en_PH -f ISO-8859-1 en_PH
+localedef -i en_US -f ISO-8859-1 en_US
+localedef -i es_MX -f ISO-8859-1 es_MX
+localedef -i fr_FR -f ISO-8859-1 fr_FR
+localedef -i fr_FR@euro -f ISO-8859-15 fr_FR@euro
+localedef -i it_IT -f ISO-8859-1 it_IT
+localedef -i ja_JP -f EUC-JP ja_JP
+***** End Code Block *****
+
+Glibc common error notes:
+running configure fragment for nptl/sysdeps/unix/sysv/linux
+running configure fragment for nptl/sysdeps/pthread
+configure: error: working compiler support for visibility attribute is required
+-> If this occurs then you didn't patch gcc correctly for POSIX
+   conformance. See nptl hint for more details.
+\NewEntry
+"Locking in" Glibc
+
+Execute in binutils-build direcotry:
+
+***** Code Block *****
+make -C ld install
+***** End Code Block *****
+
+Re-adjust the linker:
+
+***** Code Block *****
+SPECFILE=/tools/lib/gcc-lib/*/*/specs
+sed -e 's@ /lib/ld-linux.so.2@ /tools/lib/ld-linux.so.2@g' \
+    $SPECFILE > tempspecfile
+mv -f tempspecfile $SPECFILE
+unset SPECFILE
+rm -f /tools/lib/gcc-lib/*/*/include/{pthread.h,bits/sigthread.h}
+***** End Code Block *****
+
+Test the installation up to this point with the following:
+
+***** Code Block *****
+echo 'main(){}' > dummy.c
+gcc dummy.c
+readelf -l a.out | grep ': /tools'
+rm dummy.c a.out
+***** End Code Block *****
+
+Linker test outputs:
+      [Requesting program interpreter: /tools/lib/ld-linux.so.2]
+\NewEntry
+ICC + dynamic linker
+
+Just as we had to modify GCC's spec file to point to our new dynamic
+linker, we will also need to direct ICC to utilize the dynamic linker
+that we just installed. ICC has a command-line option that does just
+this:
+  -dynamic-linker
+See ICC's man page or user guide for the details of this option.
+
+You will need to modify two ICC files, for both the C and C++ compilers.
+The best place to add options for the Intel compilers when you need it
+to be used on every compilation is to use the icc.cfg and icpc.cfg files
+(for C and C++ respectively), which are located in the ICC bin directory
+(/opt/intel_cc_80/bin).
+
+From this point on and until we recompile the dynamic linker in Chapter
+6 this option will need to exist within these configuration files.
+
+Now, modify /opt/intel_cc_80/bin/icc.cfg,icpc.cfg as follows (perform as
+root on your host since we are dealing with binary only package):
+
+***** Begin Code Block *****
+cat >> /opt/intel_cc_80/bin/icc.cfg << "EOF"
+-dynamic-linker/tools/lib/ld-linux.so.2
+EOF
+***** End Code Block *****
+
+***** Begin Code Block *****
+cat >> /opt/intel_cc_80/bin/icpc.cfg << "EOF"
+-dynamic-linker/tools/lib/ld-linux.so.2
+EOF
+***** End Code Block *****
+
+Make sure `/opt/intel_cc_80/bin/{icc.cfg,icpc.cfg}' is the location of
+your icc.cfg/icpc.cfg file (both files should already exist).
+
+Also, make sure not to leave this option in icc.cfg/icpc.cfg when we are
+done (another reminder will be later in Chapter 6 right after we modify
+GCC's specs file). Otherwise, binaries will have problems finding the
+correct libraries.
+
+Test the ICC installation up to this point with the following:
+
+***** Code Block *****
+echo 'main(){}' > dummy.c
+icc dummy.c
+readelf -l a.out | grep ': /tools'
+rm dummy.c a.out
+***** End Code Block *****
+
+Linker test outputs:
+      [Requesting program interpreter: /tools/lib/ld-linux.so.2]
+\NewEntry
+Create Intel Library Symlinks
+
+From this point on we will be compiling all packages dynamically with
+ICC (with some exceptions of course). Before we continue we will need to
+set up a few symlinks to the Intel libraries. This is required because
+we will be using the newly built dynamic linker that will be looking for
+these libraries in /tools/lib.
+
+These symlinks will also be required when we chroot over to the $LFS
+partition in Chapter 6.
+
+Create the symlinks with:
+
+***** Begin Code Block *****
+ln -s /opt/intel_cc_80/lib/libcprts.so.5 /tools/lib
+ln -s /opt/intel_cc_80/lib/libcxa.so.5 /tools/lib
+ln -s /opt/intel_cc_80/lib/libunwind.so.5 /tools/lib
+***** End Code Block *****
+\NewEntry
+Tcl-8.4.5
+
+***** Code Block *****
+patch -Np1 -i ../patches/tcl8.4.5-icc-strstr.patch
+patch -Np1 -i ../patches/tcl8.4.5-icc-fixstrtod.patch
+cd unix
+CC=icc AR=xiar ./configure --prefix=/tools
+make
+TZ=UTC make test
+make install
+ln -s tclsh8.4 /tools/bin/tclsh
+***** End Code Block *****
+
+make test results
+=================
+all.tcl:    Total   10564   Passed  9474    Skipped 1089    Failed  1
+Sourced 129 Test Files.
+Files with failing tests: unixInit.test
+
+ICC Notes
+=========
+
+Requires two patches to fix the compatability source files to have valid
+syntax.
+
+I had a lot of problems with this package on my first ICC build. On this
+build on my previous build (see 20031230 notes).
+
+I recieved the following results (in comparison to my previous build):
+  39 fewer failed tests
+  passed 218 fewer tests (this is interesting - not sure what it means)
+  skipped 257 more tests
+  same total tests run
+\NewEntry
+Expect-5.39.0
+
+***** End Code Block *****
+patch -Np1 -i ../patches/expect-5.39.0-spawn.patch
+sed -i 's/AR = ar/AR = xiar/' Makefile.in
+CC=icc ./configure --prefix=/tools \
+    --with-tcl=/tools/lib --with-x=no
+make
+make test
+make SCRIPTS="" install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make test results
+=================
+
+all.tcl:        Total   25      Passed  25      Skipped 0       Failed  0
+Sourced 7 Test Files.
+\NewEntry
+DejaGnu-1.4.3
+
+***** End Code Block *****
+patch -Np1 -i ../patches/dejagnu-1.4.3-posix-tail.patch
+CC=icc CXX=icpc ./configure --prefix=/tools
+make install
+***** End Code Block *****
+
+ICC Notes
+=========
+
+DejaGnu is a tcl program, so nothing is actually compiled. However, both
+the CC and CXX variables are checked for during `configure', so they are
+both included here.
+\NewEntry
+GCC-3.3.2 - Pass 2
+
+Used the gcc compiler for this (of course).
+
+***** End Code Block *****
+patch -Np1 -i ../patches/gcc-3.3.2-posix-head-tail.patch
+patch -Np1 -i ../patches/gcc-3.3.2-no_fixincludes-1.patch
+patch -Np1 -i ../patches/gcc-3.3.2-specs-1.patch
+mkdir ../gcc-build
+cd ../gcc-build
+../gcc-3.3.2/configure --prefix=/tools \
+    --with-local-prefix=/tools \
+    --enable-clocale=gnu --enable-shared \
+    --enable-threads=posix --enable-__cxa_atexit \
+    --enable-languages=c,c++
+make
+make -k check
+../gcc-3.3.2/contrib/test_summary
+make install
+***** End Code Block *****
+
+make check results
+==================
+
+        === g++ Summary ===
+
+# of expected passes        8159
+# of unexpected successes   1
+# of expected failures      94
+# of untested testcases     9
+# of unsupported tests      14
+
+        === gcc Summary ===
+
+# of expected passes        21662
+# of unexpected failures    1
+# of expected failures      69
+# of unsupported tests      87
+
+        === libstdc++-v3 check-abi Summary ===
+
+# of added symbols:      0
+# of missing symbols:        0
+# of incompatible symbols:   0
+
+        === libstdc++-v3 Summary ===
+
+# of expected passes        453
+# of unexpected successes   24
+# of expected failures      4
+
+Sanity Check
+============
+
+***** Code Block *****
+echo 'main(){}' > dummy.c
+gcc dummy.c
+readelf -l a.out | grep ': /tools'
+rm dummy.c a.out
+***** End Code Block *****
+
+Linker test outputs:
+      [Requesting program interpreter: /tools/lib/ld-linux.so.2]
+\NewEntry
+HJL-binutils-2.14.90.0.7 - Pass 2
+
+Compiled with GCC
+
+***** End Code Block *****
+patch -Np1 -i ../patches/binutils-2.14.90.0.7-posix-head-tail.patch
+patch -Np1 -i ../patches/binutils-2.14.90.0.7-fix-static-linking.patch
+mkdir ../binutils-build
+cd ../binutils-build
+../binutils-2.14.90.0.7/configure \
+    --prefix=/tools --enable-shared --with-lib-path=/tools/lib
+make 
+make check
+make install
+make -C ld clean
+make -C ld LIB_PATH=/usr/lib:/lib
+***** End Code Block *****
+
+make check results
+==================
+
+With GCC:
+                === ld Summary ===
+
+# of expected passes            195
+# of expected failures          1
+
+./test-demangle: 715 tests, 0 failures
+
+With ICC:
+
+FAILS:
+Using /mnt/lfs/src/binutils-2.14.90.0.7/ld/testsuite/config/default.exp as tool-and-target-specific interface file.
+ERROR: tcl error sourcing tool-and-target-specific interface file /mnt/lfs/src/binutils-2.14.90.0.7/ld/testsuite/config/default.exp.
+Error getting native link files: -dynamic-linker /usr/lib/crt1.o /usr/lib/crti.o crtbegin.o
+grep: specs: No such file or directory
+Error getting native link files: -dynamic-linker /usr/lib/crt1.o /usr/lib/crti.o crtbegin.o
+
+ICC Notes
+=========
+
+The `make check' fails at this stage with errors regarding the usage of
+/usr/lib/crt1.o and /usr/lib/crti.o. Not sure why these libraries are
+being used in the first place. This failure I don't know how to fix (or
+if it needs fixing, perhaps binutils is broken when compiled with icc).
+
+For now these results are ignored. Continuing to see how everything else
+compiles. Performed `make install' with no errors.
+\NewEntry
+Gawk-3.1.3
+
+***** End Code Block *****
+sed -i 's/AR = ar/AR = xiar/' intl/Makefile.in
+CC=icc LD=xild ./configure --prefix=/tools
+make
+make check
+make install
+***** End Code Block *****
+
+make check results
+==================
+
+ALL TESTS PASSED
+
+ICC Notes
+=========
+
+xild is checked for by `configure' but not explicitly used. The linking
+stage is handled directly by the C compiler.
+
+No archives are created in this build, so changing the default archive
+to `xiar' shouldn't really matter. It is simply done for consistency.
+\NewEntry
+Coreutils-5.0
+
+***** End Code Block *****
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+CC=icc LD=xild ./configure --prefix=/tools
+make
+make RUN_EXPENSIVE_TESTS=yes check
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make check results
+==================
+
+All tests passed
+
+ICC Notes
+=========
+
+xild is checked for by `configure' but not explicitly used. The linking
+stage is handled directly by the C compiler.
+\NewEntry
+Bzip2-1.0.2
+
+***** End Code Block *****
+make PREFIX=/tools CC=icc AR=xiar install
+***** End Code Block *****
+\NewEntry
+Gzip-1.3.5
+
+***** End Code Block *****
+CC=icc ./configure --prefix=/tools
+make
+make install
+***** End Code Block *****
+\NewEntry
+Diffutils-2.8.1
+
+***** End Code Block *****
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+CC=icc LD=xild ./configure --prefix=/tools
+make
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+ICC Notes
+=========
+
+xild is checked for by `configure' but not explicitly used. The linking
+stage is handled directly by the C compiler.
+\NewEntry
+Findutils-4.1.20
+
+***** End Code Block *****
+sed -i 's/AR = ar/AR = xiar/' gnulib/lib/Makefile.in
+sed -i 's/AR = ar/AR = xiar/' intl/Makefile.in
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+CC=icc LD=xild ./configure --prefix=/tools
+make
+make check
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make check results
+==================
+
+All checks passed
+
+ICC Notes
+=========
+
+xild is checked for by `configure' but not explicitly used. The linking
+stage is handled directly by the C compiler.
+\NewEntry
+Make-3.80
+
+***** End Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/tools
+make 
+make check
+make install
+***** End Code Block *****
+
+make check results
+==================
+
+78 Tests Complete ... No Failures :-)
+
+The previous build failed these tests because it was unable to load the
+Intel shared libraries, which I fixed in this time around by creating
+the Intel library symlinks in `/tools/lib'.
+
+ICC Notes
+=========
+
+AR is checked for by `configure' but not used by make (no archives
+created).
+\NewEntry
+Grep-2.5.1
+
+***** End Code Block *****
+sed -i 's/AR = ar/AR = xiar/' intl/Makefile
+sed -i 's/AR = ar/AR = xiar/' intl/Makefile.in
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+CC=icc ./configure --prefix=/tools \
+    --disable-perl-regexp --with-included-regex
+make
+make check
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make check results
+==================
+
+All 10 tests passed
+\NewEntry
+Sed-4.0.8
+
+***** End Code Block *****
+sed -i 's/AR = ar/AR = xiar/' intl/Makefile.in
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+CC=icc ./configure --prefix=/tools
+make
+make check
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make check results
+==================
+
+All 57 tests behaved as expected (4 expected failures)
+\NewEntry
+Gettext-0.13.1
+
+***** End Code Block *****
+CC=icc CXX=icpc LD=xild AR=xiar ./configure --prefix=/tools
+sed -i 's@predep_objects="/usr/lib/crti.o /opt/intel_cc_80/lib/crtxi.o"@predep_objects="/opt/intel_cc_80/lib/crtxi.o@' autoconf-lib-link/libtool
+sed -i 's@predep_objects="/usr/lib/crti.o /opt/intel_cc_80/lib/crtxi.o"@predep_objects="/opt/intel_cc_80/lib/crtxi.o@' gettext-runtime/libtool
+sed -i 's@predep_objects="/usr/lib/crti.o /opt/intel_cc_80/lib/crtxi.o"@predep_objects="/opt/intel_cc_80/lib/crtxi.o@' gettext-runtime/libasprintf/libtool
+sed -i 's@predep_objects="/usr/lib/crti.o /opt/intel_cc_80/lib/crtxi.o"@predep_objects="/opt/intel_cc_80/lib/crtxi.o@' gettext-tools/libtool
+make
+make check
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i ...: Replace GCC's C++ libraries with Intel's libraries.
+
+make check results
+==================
+
+All 215 tests passed
+(15 tests were not run)
+
+ICC Notes
+=========
+
+I had to modify all occurrences of `crti.o' -> `crtxi.o' and `crtn.o' ->
+`crtxn.o'. This will ensure that the linker will only link against the
+Intel C++ libraries.
+
+Check for more linking against GCC's C++ though. This package is pretty
+nasty.
+\NewEntry
+Ncurses-5.3
+
+***** End Code Block *****
+patch -Np1 -i ../patches/ncurses-5.3-posix-head.patch
+patch -Np1 -i ../patches/ncurses-5.3-etip-2.patch
+CC=icc CXX=icpc LD=xild AR=xiar ./configure --prefix=/tools \
+    --with-shared --without-debug --without-ada --enable-overwrite
+make
+make install
+***** End Code Block *****
+\NewEntry
+Patch-2.5.4
+
+***** End Code Block *****
+CC=icc ./configure --prefix=/tools
+make
+make install
+***** End Code Block *****
+\NewEntry
+Tar-1.13.25
+
+***** End Code Block *****
+sed -i 's/AR = ar/AR = xiar/' intl/Makefile.in
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+CC=icc ./configure --prefix=/tools
+make
+make check
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make check results
+==================
+
+All 14 tests passed
+\NewEntry
+Texinfo-4.6
+
+***** End Code Block *****
+sed -i 's/AR = ar/AR = xiar/' intl/Makefile.in
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+CC=icc LD=xild ./configure --prefix=/tools
+make
+make check
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make check results
+==================
+
+All 19 tests passed
+\NewEntry
+Bash-2.05b
+
+***** End Code Block *****
+patch -Np1 -i ../patches/bash-2.05b-2.patch
+CC=icc AR=xiar ./configure --prefix=/tools
+make
+make tests
+make install
+ln -s bash /tools/bin/sh
+***** End Code Block *****
+
+make tests results
+==================
+
+All tests passed
+\NewEntry
+Util-linux-2.12
+
+Added the make target `misc-utils script' and copied over script so I
+can log in chroot environment.
+
+The `util-linux-2.12-2.6-headers.patch' is not required when compiling
+with icc. It is omitted here (normally it is requied when compiling with
+gcc against linux-2.6 headers).
+
+***** End Code Block *****
+cp configure configure.backup
+sed "s@/usr/include@/tools/include@g" configure.backup > configure
+./configure
+cp make_include make_include.bak
+sed -e 's%CC=cc%CC=icc%g' make_include.bak > make_include
+make -C lib
+make -C mount  mount umount
+make -C text-utils  more
+make -C misc-utils script
+cp mount/{,u}mount text-utils/more misc-utils/script /tools/bin
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -e 's%CC=cc%CC=icc%g' make_include.bak > make_include: Use the sed
+  hack otherwise running `./configure' will have different effects than
+  if you were running it with gcc.
+
+ICC Notes
+=========
+
+I had to do a sed hack to get the inclusion of icc correctly, and using
+icc doesn't required the kernel header patch that gcc requires when
+building against linux-2.6* based headers. Other than that, no problems
+occurred.
+
+Linker is utilized through the C compiler.
+\NewEntry
+Perl-5.8.2
+
+***** End Code Block *****
+sed -i 's/AR = $full_ar/AR = xiar/' Makefile.SH
+patch -Np1 -i ../patches/perl-5.8.2-libc-1.patch
+CC=icc ./configure.gnu --prefix=/tools \
+    -Dstatic_ext='IO Fcntl'
+make perl utilities
+cp perl pod/pod2man /tools/bin
+mkdir -p /tools/lib/perl5/5.8.2
+cp -R lib/* /tools/lib/perl5/5.8.2
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i '/AR = $full_ar/AR = xiar/' Makefile.SH: This command will
+  substitute xiar for ar during the build.
+\NewEntry
+intel_cc_80
+
+Before we enter the chroot environment, we will need to extract (copy)
+over the Intel C/C++ compiler to its location in what will becomre our
+root partition.
+
+Remember that the binaries we compiled with icc have hard-coded shared
+library dependencies. To check this, simply use ldd on any one of the
+binaries that you compiled with icc.
+
+Make sure to perform these instructions as root (exit your lfs user
+session).
+
+Copy the binaries over to the same directory location that you had it
+under your hosts' root (instructions assume /opt/intel_cc_80):
+
+***** Begin Code Block *****
+mkdir -p $LFS/opt
+tar xvjpf </path/to/icc-pkg>.tar.bz2 -C $LFS/opt
+***** End Code Block *****
+\NewEntry
+Library Sanity Check
+
+Perform the following sanity check to check for any dynamic libraries
+that have unresolved dependencies directed towards the Intel libraries:
+
+***** Begin Code Block *****
+ldd /tools/lib/* 2> /dev/null | grep "not found"
+***** End Code Block *****
+
+If any results appear, then make sure the relevant symlink is made in
+`/tools/lib'.
+\EndFolder
+\NewEntry
+Chapter 6
+
+No optimizations were used (default).
+\NewFolder
+\NewEntry
+Entering the chroot environment
+
+Make sure you setup the necessary symlinks for the intel libraries in
+the last step in chapter 5, then execute the chroot command.
+
+***** Begin Code Block *****
+chroot $LFS /tools/bin/env -i \
+    HOME=/root TERM=$TERM PS1='\u:\w\$ ' \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin:/opt/intel_cc_80/bin \
+    /tools/bin/bash --login +h
+***** End Code Block *****
+
+\NewEntry
+Changing ownership
+
+***** Begin Code Block *****
+chown -R 0:0 /tools
+chown -R 0:0 /src
+chown -R 0:0 /opt
+***** End Code Block *****
+\NewEntry
+Creating directories
+
+Added the /sys dir and the games directories as specified by the FHS.
+
+***** Begin Code Block *****
+mkdir -p /{bin,boot,dev/{pts,shm},etc/opt,home,lib,mnt,proc,sys} 
+mkdir -p /{root,sbin,tmp,usr/local,var,opt}
+for dirname in /usr /usr/local
+    do
+    mkdir $dirname/{bin,etc,include,lib,sbin,share,src}
+    ln -s share/{man,doc,info} $dirname
+    mkdir $dirname/share/{doc,info,locale,man}
+    mkdir $dirname/share/{misc,terminfo,zoneinfo}
+    mkdir $dirname/share/man/man{1,2,3,4,5,6,7,8}
+done
+mkdir /var/{lock,log,mail,run,spool}
+mkdir -p /var/{tmp,opt,cache,lib/misc,local}
+mkdir /opt/{bin,doc,include,info}
+mkdir -p /opt/{lib,man/man{1,2,3,4,5,6,7,8}}
+mkdir /usr/local/games /usr/share/games
+chmod 0750 /root
+chmod 1777 /tmp /var/tmp
+***** End Code Block *****
+\NewEntry
+Mounting the proc and devpts
+
+***** Begin Code Block *****
+mount proc /proc -t proc
+mount devpts /dev/pts -t devpts
+mount sysfs /sys -t sysfs
+mount tmpfs /dev/shm -t tmpfs
+***** End Code Block *****
+\NewEntry
+Creating essential symlinks
+
+***** Begin Code Block *****
+ln -s /tools/bin/{bash,cat,pwd,stty} /bin
+ln -s /tools/bin/perl /usr/bin
+ln -s /tools/lib/libgcc_s.so.1 /usr/lib
+ln -s bash /bin/sh
+***** End Code Block *****
+\NewEntry
+Creating the passwd and group files
+
+***** Begin Code Block *****
+cat > /etc/passwd << "EOF"
+root:x:0:0:root:/root:/bin/bash
+EOF
+***** End Code Block *****
+
+***** Begin Code Block *****
+cat > /etc/group << "EOF"
+root:x:0:
+bin:x:1:
+sys:x:2:
+kmem:x:3:
+tty:x:4:
+tape:x:5:
+daemon:x:6:
+floppy:x:7:
+disk:x:8:
+lp:x:9:
+dialout:x:10:
+audio:x:11:
+EOF
+***** End Code Block *****
+
+***** Begin Code Block *****
+exec /tools/bin/bash --login +h
+***** End Code Block *****
+\NewEntry
+Makedev-1.7
+
+***** Begin Code Block *****
+bzcat MAKEDEV-1.7.bz2 > /dev/MAKEDEV
+chmod 754 /dev/MAKEDEV
+cd /dev
+./MAKEDEV -v generic-nopty
+***** End Code Block *****
+\NewEntry
+ICC + dynamic linker
+
+The Intel C/C++ compiler hard-codes the path to ld to /usr/bin/ld. This
+file will not yet exist until the compilation of binutils in chapter 6.
+So, right here we will need create a symlink to the version of ld that
+is within the /tools directory:
+
+***** Begin Code Block *****
+ln -s /tools/bin/ld /usr/bin
+***** End Code Block *****
+
+All pre-built binaries (specifically, those of the Intel compiler) will
+have been linked against /lib/ld-linux.so.2. Until this file is created
+by our installation of binutils, create a symlink that points to
+/tools/lib/ld-linux.so.2. Building other libraries may required the
+files /usr/lib/{crt1.o,crti.o,crtn.o} to exist, so we also create
+symlinks to the temporarily built libraries in /tools/lib.
+
+***** Begin Code Block *****
+ln -s /tools/lib/ld-linux.so.2 /lib
+ln -s /tools/lib/crt1.o /usr/lib
+ln -s /tools/lib/crti.o /usr/lib
+ln -s /tools/lib/crtn.o /usr/lib
+***** End Code Block *****
+
+Make sure that the icc.cfg and icpc.cfg files specify the alternative
+linker `/tools/lib/ld-linux.so.2'. We will modify this path back to what
+it should be after the compilation of glibc. For now, we still need it
+to point to the alternative library path `/tools/lib'.
+
+If you need to, perform the following commands:
+
+***** Begin Code Block *****
+cat >> /opt/intel_cc_80/bin/icc.cfg << "EOF"
+-dynamic-linker/tools/lib/ld-linux.so.2
+EOF
+***** End Code Block *****
+
+***** Begin Code Block *****
+cat >> /opt/intel_cc_80/bin/icpc.cfg << "EOF"
+-dynamic-linker/tools/lib/ld-linux.so.2
+EOF
+***** End Code Block *****
+
+Peform the following test to verify the location of the dynamic linker.
+
+***** Begin Code Block *****
+echo 'main(){}' > dummy.c
+icc dummy.c
+readelf -l a.out | grep ': /tools'
+rm dummy.c a.out
+***** End Code Block *****
+
+The result of the sanity check above should still be:
+      [Requesting program interpreter: /tools/lib/ld-linux.so.2]
+\NewEntry
+Psuedo Terminal Check
+
+Verify that psuedo terminals are working correctly:
+
+***** Begin Code Block *****
+expect -c "spawn ls"
+***** End Code Block *****
+
+If you recieve "The system has no more ptys.  Ask your system
+administrator to create more.", then something is wrong with your device
+files.
+\NewEntry
+Install linux-2.6.0 Headers for glibc
+
+***** Begin Code Block *****
+make mrproper
+make include/linux/version.h
+make include/asm
+mkdir /usr/src/glibcheaders
+cp -HR include/asm /usr/src/glibcheaders
+cp -R include/asm-generic /usr/src/glibcheaders
+cp -R include/linux /usr/src/glibcheaders
+touch /usr/src/glibcheaders/linux/autoconf.h
+***** End Code Block *****
+\NewEntry
+Man-pages-1.64
+
+***** Begin Code Block *****
+make install
+***** End Code Block *****
+\NewEntry
+Copy Install-log
+
+Remember to copy staticly-linked version of install-log at this point.
+
+***** Begin Code Block *****
+cp /usr/bin/install-log /mnt/lfs/usr/bin
+cp /etc/install-log.rc /mnt/lfs/etc
+chmod 755 /mnt/lfs/usr/bin/install-log
+chmod 644 /mnt/lfs/etc/install-log.rc
+mkdir /mnt/lfs/var/log/install-log
+chmod 755 /mnt/lfs/var/log/install-log
+***** End Code Block *****
+
+Inside chroot make the .timestamp file:
+
+***** Begin Code Block *****
+touch /var/log/install-log/.timestamp
+***** End Code Block *****
+\NewEntry
+Glibc-2.3-20031230
+
+Compiled with gcc.
+
+***** Begin Code Block *****
+patch -Np1 -i ../patches/glibc-2.3-20031101-posix-sort.patch
+mkdir ../glibc-build
+cd ../glibc-build
+../glibc-2.3-20031230/configure --prefix=/usr \
+    --disable-profile --enable-add-ons=nptl \
+    --libexecdir=/usr/lib --with-headers=/usr/src/glibcheaders \
+    --enable-kernel=current --without-cvs --with-tls
+make
+make check
+touch /etc/ld.so.conf
+make install
+mkdir -p /usr/lib/locale
+localedef -i de_DE -f ISO-8859-1 de_DE
+localedef -i de_DE@euro -f ISO-8859-15 de_DE@euro
+localedef -i en_HK -f ISO-8859-1 en_HK
+localedef -i en_PH -f ISO-8859-1 en_PH
+localedef -i en_US -f ISO-8859-1 en_US
+localedef -i es_MX -f ISO-8859-1 es_MX
+localedef -i fr_FR -f ISO-8859-1 fr_FR
+localedef -i fr_FR@euro -f ISO-8859-15 fr_FR@euro
+localedef -i it_IT -f ISO-8859-1 it_IT
+localedef -i ja_JP -f EUC-JP ja_JP
+make -C ../glibc-2.3-20031230/linuxthreads/man
+make -C ../glibc-2.3-20031230/linuxthreads/man install
+***** End Code Block *****
+
+make check
+==========
+
+Results:
+All checks passed
+
+Configure with:
+
+***** Begin Code Block *****
+cat > /etc/nsswitch.conf << "EOF"
+# Begin /etc/nsswitch.conf
+
+passwd: files
+group: files
+shadow: files
+
+publickey: files
+
+hosts: files dns
+networks: files
+
+protocols: db files
+services: db files
+ethers: db files
+rpc: db files
+
+netgroup: db files
+
+# End /etc/nsswitch.conf
+EOF
+tzselect
+cp --remove-destination /usr/share/zoneinfo/America/Chicago /etc/localtime
+cat > /etc/ld.so.conf << "EOF"
+# Begin /etc/ld.so.conf
+
+/usr/local/lib
+/opt/lib
+
+# End /etc/ld.so.conf
+EOF
+***** End Code Block *****
+\NewEntry
+Add ICC Library path
+
+***** Begin Code Block *****
+cat >> /etc/ld.so.conf << "EOF"
+/opt/intel_cc_80/lib
+EOF
+ldconfig
+***** End Code Block *****
+\NewEntry
+glibc-kernheaders-2.4-8.41
+
+***** Begin Code Block *****
+cd usr/include/
+cp -R asm-i386 /usr/include/asm
+cp -R linux /usr/include
+***** End Code Block *****
+\NewEntry
+Re-adjusting the toolchain
+
+***** Begin Code Block *****
+make -C ld INSTALL=/tools/bin/install install
+SPECFILE=/tools/lib/gcc-lib/*/*/specs &&
+sed -e 's@ /tools/lib/ld-linux.so.2@ /lib/ld-linux.so.2@g' \
+    $SPECFILE > newspecfile &&
+mv -f newspecfile $SPECFILE &&
+unset SPECFILE
+***** End Code Block *****
+
+Test environment with:
+
+***** End Code Block *****
+echo 'main(){}' > dummy.c
+gcc dummy.c
+readelf -l a.out | grep ': /lib'
+rm dummy.c a.out
+***** End Code Block *****
+
+Sanity check passed with the expected results:
+      [Requesting program interpreter: /lib/ld-linux.so.2]
+\NewEntry
+Re-adjusting ICC + dynamic linker
+
+Now that the dynamic linker has been installed to its final location,
+remove the configuration options from the icc.cfg and icpc.cfg files
+that set the linker to /tools/lib/ld-linux.so.2.
+
+Execute the following instructions to delete the linker options:
+
+***** End Code Block *****
+sed -i '/-dynamic-linker\/tools\/lib\/ld-linux.so.2/d' \
+    /opt/intel_cc_80/bin/icc.cfg
+sed -i '/-dynamic-linker\/tools\/lib\/ld-linux.so.2/d' \
+    /opt/intel_cc_80/bin/icpc.cfg
+***** End Code Block *****
+
+Test environment with:
+
+***** End Code Block *****
+echo 'main(){}' > dummy.c
+icc dummy.c
+readelf -l a.out | grep ': /lib'
+rm dummy.c a.out
+***** End Code Block *****
+
+Sanity check passed with the expected results:
+      [Requesting program interpreter: /lib/ld-linux.so.2]
+\NewEntry
+M4-1.4
+
+***** Begin Code Block *****
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+CC=icc ./configure --prefix=/usr
+make
+make check
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make check results
+==================
+
+All checks successful
+\NewEntry
+Bison-1.875
+
+***** Begin Code Block *****
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+patch -Np1 -i ../patches/bison-1.875-attribute.patch
+CC=icc GXX=icpc LD=xild ./configure --prefix=/usr
+make
+make check
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make check results
+==================
+
+ERROR: Suite unsuccessful, 1 of 104 tests failed.
+...
+27. reduce.at:212: FAILED near `reduce.at:291'
+
+Investigate this error.
+
+Previous build had exact same error. See testsuite.log for details.
+\NewEntry
+Flex-2.5.4a
+
+***** Begin Code Block *****
+sed -i 's/AR = ar/AR = xiar/' Makefile.in
+CC=icc ./configure --prefix=/usr
+make
+make bigcheck
+make install
+ln -s libfl.a /usr/lib/libl.a
+cat > /usr/bin/lex << "EOF"
+#!/bin/sh
+# Begin /usr/bin/lex
+
+exec /usr/bin/flex -l "$@"
+
+# End /usr/bin/lex
+EOF
+chmod 755 /usr/bin/lex
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make bigcheck results
+=====================
+
+All checks successful
+\NewEntry
+HJL-binutils-2.14.90.0.7
+
+Compiled with GCC
+
+***** Begin Code Block *****
+patch -Np1 -i ../patches/binutils-2.14.90.0.7-posix-head-tail.patch
+patch -Np1 -i ../patches/binutils-2.14.90.0.7-fix-static-linking.patch
+mkdir ../binutils-build
+cd ../binutils-build
+../binutils-2.14.90.0.7/configure \
+    --prefix=/usr --enable-shared
+make tooldir=/usr
+make check
+make tooldir=/usr install
+cp ../binutils-2.14.90.0.7/include/libiberty.h /usr/include
+***** End Code Block *****
+
+make check results
+==================
+
+                === ld Summary ===
+
+# of expected passes            195
+# of expected failures          1
+
+./test-demangle: 715 tests, 0 failures
+\NewEntry
+GCC-3.3.2
+
+***** Begin Code Block *****
+patch -Np1 -i ../patches/gcc-3.3.2-posix-head-tail.patch
+patch -Np1 -i ../patches/gcc-3.3.2-no_fixincludes-1.patch
+sed -i 's/install_to_$(INSTALL_DEST) //' libiberty/Makefile.in
+mkdir ../gcc-build
+cd ../gcc-build
+../gcc-3.3.2/configure --prefix=/usr \
+    --enable-shared --enable-threads=posix \
+    --enable-__cxa_atexit --enable-clocale=gnu \
+    --enable-languages=c,c++
+make
+make -k check
+../gcc-3.3.2/contrib/test_summary
+make install
+ln -s ../usr/bin/cpp /lib
+ln -s gcc /usr/bin/cc
+***** End Code Block *****
+
+make check results
+==================
+
+        === g++ Summary ===
+
+# of expected passes        8159
+# of unexpected successes   1
+# of expected failures      94
+# of untested testcases     9
+# of unsupported tests      14
+
+        === gcc Summary ===
+
+# of expected passes        21662
+# of unexpected failures    1
+# of expected failures      65
+# of unsupported tests      87
+
+        === libstdc++-v3 check-abi Summary ===
+
+# of added symbols:      0
+# of missing symbols:        0
+# of incompatible symbols:   0
+
+        === libstdc++-v3 Summary ===
+
+# of expected passes        453
+# of unexpected successes   24
+# of expected failures      4
+
+Results were same as previous ICC build.
+\NewEntry
+Coreutils-5.0
+
+***** Begin Code Block *****
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+patch -Np1 -i ../patches/coreutils-5.0-uname.patch
+patch -Np1 -i ../patches/coreutils-5.0-hostname-2.patch
+CC=icc LD=xild ./configure --prefix=/usr
+make
+make install-root
+echo "dummy1:x:1000" >> /etc/group
+echo "dummy2:x:1001:dummy" >> /etc/group
+echo "dummy:x:1000:1000:::/bin/bash" >> /etc/passwd
+make check-root
+su dummy -c "make RUN_EXPENSIVE_TESTS=yes check"
+sed -i.bak '/dummy/d' /etc/passwd /etc/group
+make install
+mv /usr/bin/{basename,cat,chgrp,chmod,chown,cp,dd,df} /bin
+mv /usr/bin/{date,echo,false,head,install,ln,ls} /bin
+mv /usr/bin/{mkdir,mknod,mv,pwd,rm,rmdir,sync} /bin
+mv /usr/bin/{sleep,stty,su,test,touch,true,uname} /bin
+mv /usr/bin/chroot /usr/sbin
+rm /usr/bin/kill
+ln -s test /bin/[
+ln -s ../../bin/install /usr/bin
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make check results
+==================
+
+All checks passed
+\NewEntry
+Zlib-1.2.1
+
+***** Begin Code Block *****
+CC=icc AR=xiar LDSHARED="icc -shared" ./configure \
+    --prefix=/usr --shared
+make
+make check
+make install
+make clean
+CC=icc AR="xiar rc" LDSHARED="icc -shared" ./configure \
+    --prefix=/usr
+make
+make check
+make install
+chmod 644 /usr/lib/libz.a
+mv /usr/lib/libz.so.* /lib
+ln -sf ../../lib/libz.so.1 /usr/lib/libz.so
+***** End Code Block *****
+
+make check
+==========
+
+zlib test OK
+\NewEntry
+Lfs-Utils-0.4.2
+
+***** Begin Code Block *****
+CC=icc ./configure --prefix=/usr --with-libc
+make
+make install
+cp etc/{services,protocols} /etc
+***** End Code Block *****
+\NewEntry
+Findutils-4.1.20
+
+***** Begin Code Block *****
+sed -i 's/AR = ar/AR = xiar/' gnulib/lib/Makefile.in
+sed -i 's/AR = ar/AR = xiar/' intl/Makefile.in
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+CC=icc LD=xild ./configure --prefix=/usr \
+    --libexecdir=/usr/lib/locate
+make
+make check
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make check results
+==================
+
+All checks passed
+\NewEntry
+Gawk-3.1.3
+
+***** Begin Code Block *****
+sed -i 's/AR = ar/AR = xiar/' intl/Makefile.in
+patch -Np1 -i ../patches/gawk-3.1.3-libexecdir.patch
+CC=icc LD=xild ./configure --prefix=/usr \
+    --libexecdir=/usr/lib/gawk
+make
+make check
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make check results
+==================
+
+ALL TESTS PASSED
+
+ICC Notes
+=========
+
+No archives are created in this build, so changing the default archive
+to `xiar' shouldn't really matter. It is simply done for consistency.
+\NewEntry
+Ncurses-5.3
+
+***** Begin Code Block *****
+patch -Np1 -i ../patches/ncurses-5.3-posix-head.patch
+patch -Np1 -i ../patches/ncurses-5.3-etip-2.patch
+CC=icc CXX=icpc LD=xild AR=xiar ./configure --prefix=/usr \
+    --with-shared --without-debug
+make
+make install
+chmod 755 /usr/lib/*.5.3
+chmod 644 /usr/lib/libncurses++.a
+mv /usr/lib/libncurses.so.5* /lib
+ln -sf ../../lib/libncurses.so.5 /usr/lib/libncurses.so
+ln -sf libncurses.so /usr/lib/libcurses.so
+***** End Code Block *****
+\NewEntry
+Vim-6.2
+
+***** Begin Code Block *****
+echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
+echo '#define SYS_GVIMRC_FILE "/etc/gvimrc"' >> src/feature.h
+CC=icc ./configure --prefix=/usr
+make
+make test
+make install
+ln -s vim /usr/bin/vi
+cat > /etc/vimrc << "EOF"
+" Begin /etc/vimrc
+
+set nocompatible
+set backspace=2
+syntax on
+
+" End /etc/vimrc
+EOF
+***** End Code Block *****
+
+make test results
+=================
+
+All checks passed
+\NewEntry
+Less-381
+
+***** Begin Code Block *****
+CC=icc ./configure --prefix=/usr \
+    --bindir=/bin --sysconfdir=/etc
+make
+make install
+***** End Code Block *****
+\NewEntry
+Groff-1.19
+
+***** Begin Code Block *****
+sed -i 's/AR=ar/AR=xiar/' Makefile.in
+CC=icc CXX=icpc PAGE=letter ./configure --prefix=/usr
+make
+make install
+ln -s soelim /usr/bin/zsoelim
+ln -s eqn /usr/bin/geqn
+ln -s tbl /usr/bin/gtbl
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR=ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+\NewEntry
+Sed-4.0.8
+
+***** Begin Code Block *****
+sed -i 's/AR = ar/AR = xiar/' intl/Makefile.in
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+CC=icc ./configure --prefix=/usr --bindir=/bin
+make
+make check
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make check results
+==================
+
+All 57 tests behaved as expected (4 expected failures)
+\NewEntry
+Gettext-0.13.1
+
+alternative build commands with icc:
+
+***** Begin Code Block *****
+echo "-cxxlib-gcc" >> /opt/intel_cc_80/bin/icpc.cfg
+***** End Code Block *****
+
+***** Begin Code Block *****
+CC=icc CXX=icpc LD=xild AR=xiar ./configure --prefix=/usr
+sed -i 's@predep_objects="/usr/lib/crti.o /opt/intel_cc_80/lib/crtxi.o"@predep_objects="/opt/intel_cc_80/lib/crtxi.o@' autoconf-lib-link/libtool
+sed -i 's@predep_objects="/usr/lib/crti.o /opt/intel_cc_80/lib/crtxi.o"@predep_objects="/opt/intel_cc_80/lib/crtxi.o@' gettext-runtime/libtool
+sed -i 's@predep_objects="/usr/lib/crti.o /opt/intel_cc_80/lib/crtxi.o"@predep_objects="/opt/intel_cc_80/lib/crtxi.o@' gettext-runtime/libasprintf/libtool
+sed -i 's@predep_objects="/usr/lib/crti.o /opt/intel_cc_80/lib/crtxi.o"@predep_objects="/opt/intel_cc_80/lib/crtxi.o@' gettext-tools/libtool
+make
+make check
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i ...: Replace GCC's C++ libraries with Intel's libraries.
+
+make check results
+==================
+
+All 215 tests passed
+(15 tests were not run)
+\NewEntry
+Net-tools-1.60
+
+***** Begin Code Block *****
+patch -Np1 -i ../patches/net-tools-1.60-miitool-gcc33-1.patch
+yes "" | make config
+make CC=icc AR=xiar COPTS="-D_GNU_SOURCE -Wall $CFLAGS"
+make update
+***** End Code Block *****
+\NewEntry
+Inetutils-1.4.2
+
+***** Begin Code Block *****
+patch -Np1 -i ../patches/inetutils-1.4.2-no_server_man_pages-1.patch
+CC=icc AR=xiar ./configure --prefix=/usr \
+    --disable-syslogd \
+    --libexecdir=/usr/sbin --disable-logger \
+    --sysconfdir=/etc --localstatedir=/var \
+    --disable-whois --disable-servers
+make
+make install
+mv /usr/bin/ping /bin
+***** End Code Block *****
+\NewEntry
+Perl-5.8.2
+
+***** Begin Code Block *****
+sed -i 's/AR = $full_ar/AR = xiar/' Makefile.SH
+CC=icc ./configure.gnu --prefix=/usr \
+    -Dpager="/bin/less -isR"
+make
+echo "127.0.0.1 localhost $(hostname)" > /etc/hosts
+make test
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i '/AR = $full_ar/AR = xiar/' Makefile.SH: This command will
+  substitute xiar for ar during the build.
+
+make test results
+=================
+
+All tests successful
+\NewEntry
+Texinfo-4.6
+
+***** Begin Code Block *****
+sed -i 's/AR = ar/AR = xiar/' intl/Makefile.in
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+CC=icc LD=xild ./configure --prefix=/usr
+make
+make check
+make install
+make TEXMF=/usr/share/texmf install-tex
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make check results
+==================
+
+All 19 tests passed
+\NewEntry
+Autoconf-2.59
+
+There is no C/C++ compilation done in this package.
+
+***** Begin Code Block *****
+./configure --prefix=/usr
+make
+make check
+make install
+***** End Code Block *****
+
+make check results
+==================
+
+172 tests were successful.
+11 tests were skipped.
+\NewEntry
+Automake-1.8
+
+There is no C/C++ compilation done in this package.
+
+***** Begin Code Block *****
+./configure --prefix=/usr
+make
+make check
+make install
+***** End Code Block *****
+
+make check results
+==================
+
+All 466 tests behaved as expected (3 expected failures)
+(52 tests were not run)
+\NewEntry
+Bash-2.05b
+
+***** Begin Code Block *****
+patch -Np1 -i ../patches/bash-2.05b-2.patch
+CC=icc AR=xiar ./configure --prefix=/usr --bindir=/bin
+make
+make tests
+make install
+exec /bin/bash --login +h
+***** End Code Block *****
+
+make tests results
+==================
+
+All tests passed
+\NewEntry
+File-4.07
+
+***** Begin Code Block *****
+CC=icc AR=xiar ./configure --prefix=/usr
+make
+make install
+***** End Code Block *****
+\NewEntry
+Libtool-1.5
+
+***** Begin Code Block *****
+CC=icc CXX=icpc LD=xild AR=xiar ./configure --prefix=/usr
+make
+make check
+make install
+***** End Code Block *****
+
+make check results
+==================
+
+All 96 tests passed
+\NewEntry
+Bzip2-1.0.2
+
+***** Begin Code Block *****
+cp Makefile Makefile.backup
+sed -e 's%$(BIGFILES)%$(BIGFILES) $(OPT)%' \
+    Makefile.backup > Makefile
+cp Makefile-libbz2_so Makefile-libbz2_so.backup
+sed -e 's%$(BIGFILES)%$(BIGFILES) $(OPT)%' \
+    Makefile-libbz2_so.backup > Makefile-libbz2_so
+make -f Makefile-libbz2_so OPT="$CFLAGS" CC=icc AR=xiar
+make clean
+make OPT="$CFLAGS" CC=icc AR=xiar
+make install
+cp bzip2-shared /bin/bzip2
+cp -a libbz2.so* /lib
+ln -s ../../lib/libbz2.so.1.0 /usr/lib/libbz2.so
+rm /usr/bin/{bunzip2,bzcat,bzip2}
+mv /usr/bin/{bzip2recover,bzless,bzmore} /bin
+ln -s bzip2 /bin/bunzip2
+ln -s bzip2 /bin/bzcat
+***** End Code Block *****
+\NewEntry
+Diffutils-2.8.1
+
+***** Begin Code Block *****
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+CC=icc LD=xild ./configure --prefix=/usr
+make
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+ICC Notes
+=========
+
+xild is checked for by `configure' but not explicitly used. The linking
+stage is handled directly by the C compiler.
+\NewEntry
+Ed-0.2
+
+***** Begin Code Block *****
+sed -i 's/AR = ar/AR = xiar/' Makefile.in
+patch -Np1 -i ../patches/ed-0.2-mkstemp.patch
+CC=icc ./configure --prefix=/usr --exec-prefix=""
+make
+make check
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make check results
+==================
+
+tests completed successfully
+\NewEntry
+Kbd-1.10
+
+***** Begin Code Block *****
+patch -Np1 -i ../patches/kbd-1.08-more-programs-3.patch
+./configure
+make CFLAGS="$CFLAGS" CC=icc
+make install
+***** End Code Block *****
+
+ICC Notes
+=========
+
+The CC environment variable is not picked up by `configure', so provide
+the alternative compiler directly to the `make' command.
+\NewEntry
+E2fsprogs-1.34
+
+***** Begin Code Block *****
+mkdir ../e2fsprogs-build
+cd ../e2fsprogs-build
+CC=icc LD=xild AR=xiar ../e2fsprogs-1.34/configure --prefix=/usr \
+    --with-root-prefix="" --enable-elf-shlibs
+make
+make check
+make install
+make install-libs
+***** End Code Block *****
+
+make check results
+==================
+
+65 tests succeeded       0 tests failed
+\NewEntry
+Grep-2.5.1
+
+***** Begin Code Block *****
+sed -i 's/AR = ar/AR = xiar/' intl/Makefile
+sed -i 's/AR = ar/AR = xiar/' intl/Makefile.in
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+CC=icc ./configure --prefix=/usr --bindir=/bin \
+    --with-included-regex
+make
+make check
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make check results
+==================
+
+All 10 tests passed
+\NewEntry
+Grub-0.93
+
+Compiled with GCC
+
+Unset CFLAGS/CXXFLAGS in order to compile successfully.
+
+Couldn't get grub to compile with icc, not too surprising that it won't
+compile without modifications. Also, not a big deal, after all it is
+only a bootloader.
+
+Investigate this package compilation later.
+
+***** Begin Code Block *****
+sed -i 's/2 long/2/' stage2/fsys_reiserfs.c
+./configure --prefix=/usr
+make
+make install
+mkdir /boot/grub
+cp /usr/share/grub/i386-pc/stage{1,2} /boot/grub
+***** End Code Block *****
+\NewEntry
+Gzip-1.3.5
+
+***** Begin Code Block *****
+CC=icc ./configure --prefix=/usr
+cp gzexe.in{,.backup}
+sed 's%"BINDIR"%/bin%' gzexe.in.backup > gzexe.in
+make
+make install
+mv /usr/bin/gzip /bin
+rm /usr/bin/{gunzip,zcat}
+ln -s gzip /bin/gunzip
+ln -s gzip /bin/zcat
+ln -s gunzip /bin/uncompress
+***** End Code Block *****
+\NewEntry
+Man-1.5m2
+
+***** Begin Code Block *****
+patch -Np1 -i ../patches/man-1.5m2-80cols.patch
+sed -i 's/-is/&R/' configure
+sed -i 's%MANPATH./usr/man%#&%' src/man.conf.in
+CC=icc ./configure -default -confdir=/etc
+make
+make install
+***** End Code Block *****
+\NewEntry
+Make-3.80
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr
+make
+make check
+make install
+***** End Code Block *****
+
+make check results
+==================
+
+78 Tests Complete ... No Failures :-)
+
+ICC Notes
+=========
+
+AR is checked for by `configure' but not used by make (no archives
+created).
+\NewEntry
+module-init-tools-0.9.15-pre4
+
+Compiled with GCC
+
+***** Begin Code Block *****
+./configure --prefix=/
+make
+make install
+***** End Code Block *****
+\NewEntry
+Patch-2.5.4
+
+***** Begin Code Block *****
+CC=icc ./configure --prefix=/usr
+make
+make install
+***** End Code Block *****
+\NewEntry
+Procinfo-18
+
+***** Begin Code Block *****
+make LDLIBS=-lncurses CFLAGS="$CFLAGS" CC=icc
+make install
+***** End Code Block *****
+\NewEntry
+Procps-2.0.18
+
+This modified version of procps can be found here:
+http://www.tech9.net/rml/procps/
+and should be better used with nptl.
+
+***** Begin Code Block *****
+patch -Np1 -i ../patches/procps-2.0.18-posix-sort.patch
+cp Makefile Makefile.backup
+sed -e 's%CFLAGS := -O2 -g3%CFLAGS := ${CFLAGS} -g3%' \
+    Makefile.backup > Makefile
+make
+make install
+***** End Code Block *****
+
+ICC Notes
+=========
+
+If this package is built with ICC then its binaries will always report
+the following error (only some of the binaries fail):
+
+***** Begin Error Block *****
+root:/usr/src# ps
+
+
+Signal 8 caught by ps (procps version 2.0.18).
+Please send bug reports to <procps-list@redhat.com>
+***** End Error Block *****
+
+For now, compile this package with GCC.
+
+The alternative insturctions for ICC are as follows:
+
+***** Begin Code Block *****
+patch -Np1 -i ../patches/procps-2.0.18-posix-sort.patch
+cp Makefile Makefile.backup
+sed -e 's%CFLAGS := -O2 -g3%CFLAGS := ${CFLAGS} -g3%' \
+    Makefile.backup > Makefile
+make CC=icc
+make install
+***** End Code Block *****
+\NewEntry
+Psmisc-21.4
+
+Unset CFLAGS/CXXFLAGS in order to compile successfully.
+
+***** Begin Code Block *****
+CC=icc CXX=icpc LD=xild AR=xiar ./configure --prefix=/usr \
+    --exec-prefix=/
+make
+make install
+mv /bin/pstree* /usr/bin
+ln -sf pstree /usr/bin/pstree.x11
+***** End Code Block *****
+\NewEntry
+Shadow-4.0.3
+
+***** Begin Code Block *****
+touch /var/run/utmp /var/log/{btmp,lastlog,wtmp}
+chmod 644 /var/run/utmp /var/log/{btmp,lastlog,wtmp}
+touch /usr/bin/passwd
+patch -Np1 -i ../patches/shadow-4.0.3-newgrp-fix.patch
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr \
+    --libdir=/usr/lib --enable-shared
+make
+make install
+cp etc/{limits,login.access} /etc
+sed -e 's%/var/spool/mail%/var/mail%' \
+    -e 's%#MD5_CRYPT_ENAB.no%MD5_CRYPT_ENAB yes%' \
+    etc/login.defs.linux > /etc/login.defs
+ln -s vipw /usr/sbin/vigr
+rm /bin/vipw
+mv /bin/sg /usr/bin
+mv /usr/lib/lib{shadow,misc}.so.0* /lib
+ln -sf ../../lib/libshadow.so.0 /usr/lib/libshadow.so
+ln -sf ../../lib/libmisc.so.0 /usr/lib/libmisc.so
+mkdir /etc/default
+rm /bin/groups
+/usr/sbin/pwconv
+/usr/sbin/grpconv
+passwd root
+***** End Code Block *****
+\NewEntry
+Sysklogd-1.4.1
+
+***** Begin Code Block *****
+make RPM_OPT_FLAGS="$CFLAGS" CC=icc
+make install
+cat > /etc/syslog.conf << "EOF"
+# Begin /etc/syslog.conf
+
+auth,authpriv.* -/var/log/auth.log
+*.*;auth,authpriv.none -/var/log/sys.log
+daemon.* -/var/log/daemon.log
+kern.* -/var/log/kern.log
+mail.* -/var/log/mail.log
+user.* -/var/log/user.log
+*.emerg *
+
+# End /etc/syslog.conf
+EOF
+***** End Code Block *****
+\NewEntry
+Sysvinit-2.85
+
+***** Begin Code Block *****
+patch -Np1 -i ../patches/sysvinit-2.85-posix-chown.patch
+cp src/init.c{,.backup}
+sed 's/Sending processes/& started by init/g' \
+    src/init.c.backup > src/init.c
+make -C src CFLAGS="-Wall -D_GNU_SOURCE $CFLAGS" CC=icc
+make -C src install
+***** End Code Block *****
+
+Configure with:
+
+***** Begin Code Block *****
+cat > /etc/inittab << "EOF"
+# Begin /etc/inittab
+
+id:3:initdefault:
+
+si::sysinit:/etc/rc.d/init.d/rc sysinit
+
+l0:0:wait:/etc/rc.d/init.d/rc 0
+l1:S1:wait:/etc/rc.d/init.d/rc 1
+l2:2:wait:/etc/rc.d/init.d/rc 2
+l3:3:wait:/etc/rc.d/init.d/rc 3
+l4:4:wait:/etc/rc.d/init.d/rc 4
+l5:5:wait:/etc/rc.d/init.d/rc 5
+l6:6:wait:/etc/rc.d/init.d/rc 6
+
+ca:12345:ctrlaltdel:/sbin/shutdown -t1 -a -r now
+
+su:S016:once:/sbin/sulogin
+
+1:2345:respawn:/sbin/agetty tty1 9600
+2:2345:respawn:/sbin/agetty tty2 9600
+3:2345:respawn:/sbin/agetty tty3 9600
+4:2345:respawn:/sbin/agetty tty4 9600
+5:2345:respawn:/sbin/agetty tty5 9600
+6:2345:respawn:/sbin/agetty tty6 9600
+
+# End /etc/inittab
+EOF
+***** End Code Block *****
+\NewEntry
+Tar-1.13.25
+
+***** Begin Code Block *****
+sed -i 's/AR = ar/AR = xiar/' intl/Makefile.in
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+CC=icc LD=xild AR=xiar ./configure --prefix=/usr \
+    --bindir=/bin --libexecdir=/usr/sbin
+make
+make check
+make install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR = ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+make check results
+==================
+
+All 14 tests passed
+\NewEntry
+Util-linux-2.12
+
+***** Begin Code Block *****
+cp hwclock/hwclock.c{,.backup}
+sed 's%etc/adjtime%var/lib/hwclock/adjtime%' \
+    hwclock/hwclock.c.backup > hwclock/hwclock.c
+mkdir -p /var/lib/hwclock
+./configure
+cp make_include make_include.bak
+sed -e 's%CC=cc%CC=icc%g' make_include.bak > make_include
+make HAVE_KILL=yes HAVE_SLN=yes
+make HAVE_KILL=yes HAVE_SLN=yes install
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -e 's%CC=cc%CC=icc%g' make_include.bak > make_include: Use the sed
+  hack otherwise running `./configure' will have different effects than
+  if you were running it with gcc.
+
+ICC Notes
+=========
+
+I had to do a sed hack to get the inclusion of icc correctly, and using
+icc doesn't required the kernel header patch that gcc requires when
+building against linux-2.6* based headers. Other than that, no problems
+occurred.
+
+Linker is utilized through the C compiler.
+\NewEntry
+GCC-2.95.3
+
+Unset CFLAGS CXXFLAGS or set to lower optimization flags that gcc-2.95.3
+can understand.
+
+Compiled with GCC (of course)
+
+***** Begin Code Block *****
+patch -Np1 -i ../patches/gcc-2.95.3-2.patch
+patch -Np1 -i ../patches/gcc-2.95.3-no-fixinc.patch
+patch -Np1 -i ../patches/gcc-2.95.3-returntype-fix.patch
+echo timestamp > gcc/cstamp-h.in
+mkdir ../gcc-2-build
+cd ../gcc-2-build
+../gcc-2.95.3/configure --prefix=/opt/gcc-2.95.3 \
+    --enable-shared --enable-languages=c \
+    --enable-threads=posix
+make bootstrap
+make install
+***** End Code Block *****
+\NewEntry
+LFS-Bootscripts-1.12
+
+***** Begin Code Block *****
+cp -a rc.d sysconfig /etc
+chown -R root:root /etc/rc.d /etc/sysconfig
+***** End Code Block *****
+\NewEntry
+Revised chroot command
+
+***** Begin Code Block *****
+chroot $LFS /usr/bin/env -i \
+    HOME=/root TERM=$TERM PS1='\u:\w\$ ' \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+    /bin/bash --login
+***** End Code Block *****
+\EndFolder
+\NewEntry
+Chapter 8
+\NewFolder
+\NewEntry
+Linux-2.6.0
+
+***** Begin Code Block *****
+make mrproper
+make menuconfig
+make
+make modules_install
+cp arch/i386/boot/bzImage /boot/lfskernel
+cp System.map /boot
+***** End Code Block *****
+\EndFolder
+\EndFolder
+\NewEntry
+BLFS-CVS-20040104 + ICC v8.0
+\NewFolder
+\NewEntry
+Revised chroot command
+
+***** Begin Code Block *****
+chroot $LFS /usr/bin/env -i \
+    HOME=/root TERM=$TERM PS1='\u:\w\$ ' \
+    PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+    /bin/bash --login
+***** End Code Block *****
+
+Mounting the proc and devpts
+
+***** Begin Code Block *****
+mount proc /proc -t proc
+mount devpts /dev/pts -t devpts
+mount sysfs /sys -t sysfs
+mount tmpfs /dev/shm -t tmpfs
+***** End Code Block *****
+\NewEntry
+Package Failures:
+
+\NewEntry
+Configuration
+\NewFolder
+\NewEntry
+Random Number generator
+\NewEntry
+/etc/inputrc
+\NewEntry
+Compressing man and info pages
+
+/usr/bin/compressdoc --bz2
+/usr/bin/compressdoc --help
+\EndFolder
+\NewEntry
+Packages
+\NewFolder
+\NewEntry
+ReiserFS-3.6.11
+
+***** Begin Code Block *****
+sed -i 's/AR = ar/AR = xiar/' lib/Makefile.in
+sed -i 's/AR = ar/AR = xiar/' reiserfscore/Makefile.in
+CC=icc ./configure --prefix=/usr --sbindir=/sbin
+make
+make install
+ln -sf reiserfsck /sbin/fsck.reiserfs
+ln -sf mkreiserfs /sbin/mkfs.reiserfs
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR=ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+\NewEntry
+OpenSSL-0.9.7c
+
+***** Begin Code Block *****
+sed -i 's/AR=ar/AR=xiar/' Makefile
+sed -i 's/AR=ar/AR=xiar/' Makefile.org
+sed -i 's/AR=ar/AR=xiar/' Makefile.ssl
+sed -i 's/AR=ar/AR=xiar/' Makefile.ssl.bak
+patch -Np1 -i ../patches/openssl-0.9.7c-linux-elf-icc.patch
+patch -Np1 -i ../patches/openssl-0.9.7c-manpages.patch
+sed 's/^passwd/openssl-passwd/' doc/apps/passwd.pod \
+    > doc/apps/openssl-passwd.pod
+rm doc/apps/passwd.pod
+./Configure linux-elf-icc --openssldir=/etc/ssl \
+    --prefix=/usr
+make test
+make MANDIR=/usr/share/man
+make MANDIR=/usr/share/man install
+cp -r certs /etc/ssl
+rmdir /etc/ssl/lib
+chmod 755 /usr/lib/pkgconfig
+***** End Code Block *****
+
+Command explanations
+====================
+
+sed -i 's/AR=ar/AR = xiar/' *Makefile.in: This command will substitute
+  xiar for ar during the build.
+
+patch -Np1 -i ../openssl-0.9.7c-linux-elf-icc.patch: This patches the
+  source files to add a new `Configure' target called linux-elf-icc. This
+  new target will be similar to the linux-elf target, except it specifies
+  the use of icc as the compiler.
+
+make test results
+=================
+
+I don't have any experience doint the make test on this package, so I don't
+know if this error should be expected or what it means. Ignored for now.
+
+***** Error Code Block *****
+input word alignment test 0 1 2 3
+output word alignment test 0 1 2 3
+fast crypt test 
+make[1]: *** [test_des] Error 1
+make[1]: Leaving directory `/usr/src/openssl-0.9.7c/test'
+make: *** [tests] Error 2
+***** End Error Block *****
+\NewEntry
+OpenSSH-3.7.1p2
+
+***** Begin Code Block *****
+mkdir /var/empty
+chown root:sys /var/empty
+groupadd sshd
+useradd -c 'sshd privsep' -d /var/empty -g sshd -s /bin/false sshd
+***** End Code Block *****
+
+***** Begin Code Block *****
+CC=icc ./configure --prefix=/usr --sysconfdir=/etc/ssh \
+    --libexecdir=/usr/sbin --with-md5-passwords
+make
+make install
+***** End Code Block *****
+
+***** Begin Code Block *****
+cat > /etc/rc.d/init.d/sshd << "EOF"
+#!/bin/sh
+# Begin $rc_base/init.d/sshd
+
+# Based on sysklogd script from LFS-3.1 and earlier.
+# Rewritten by Gerard Beekmans  - gerard@linuxfromscratch.org
+
+source /etc/sysconfig/rc
+source $rc_functions
+
+case "$1" in
+        start)
+                echo "Starting SSH Server..."
+                loadproc /usr/sbin/sshd
+                ;;
+
+        stop)
+                echo "Stopping SSH Server..."
+                killproc /usr/sbin/sshd
+                ;;
+
+        reload)
+                echo "Reloading SSH Server..."
+                reloadproc /usr/sbin/sshd
+                ;;
+             
+        restart)
+                $0 stop
+                sleep 1
+                $0 start
+                ;;
+
+        status)
+                statusproc /usr/sbin/sshd
+                ;;
+
+        *)
+                echo "Usage: $0 {start|stop|reload|restart|status}"
+                exit 1
+                ;;
+esac
+
+# End $rc_base/init.d/sshd
+EOF
+chmod 755 /etc/rc.d/init.d/sshd
+cd /etc/rc.d/init.d &&
+ln -sf ../init.d/sshd ../rc0.d/K30sshd &&
+ln -sf ../init.d/sshd ../rc1.d/K30sshd &&
+ln -sf ../init.d/sshd ../rc2.d/K30sshd &&
+ln -sf ../init.d/sshd ../rc3.d/S30sshd &&
+ln -sf ../init.d/sshd ../rc4.d/S30sshd &&
+ln -sf ../init.d/sshd ../rc5.d/S30sshd &&
+ln -sf ../init.d/sshd ../rc6.d/K30sshd
+***** End Code Block *****
+\NewEntry
+Screen-4.0.1
+
+***** Begin Code Block *****
+CC=icc ./configure --prefix=/usr
+make
+make install
+***** End Code Block *****
+\NewEntry
+NASM-0.98.38
+
+***** Begin Code Block *****
+CC=icc ./configure --prefix=/usr
+make
+make install
+***** End Code Block *****
+\NewEntry
+LAME-3.93.1
+
+***** Begin Code Block *****
+CC=icc LD=xild AR=xiar ./configure --prefix=/opt/lame \
+    --mandir=/usr/share/man
+make
+make install
+***** End Code Block *****
+
+lame -b 192 in.wav out.mp3
+real    0m17.853s
+user    0m17.609s
+sys     0m0.189s
+
+compiled with -axW
+real    0m17.730s
+user    0m17.509s
+sys     0m0.172s
+\NewEntry
+kernel
+
+export KBUILD_VERBOSE=1
+
+AR
+CC
+HOSTCC
+HOSTCXX
+LD
+
+make CC=icc HOSTCXX=icpc AR=xiar HOSTCC=icc LD=xild
+
+the command
+
+
+***** Begin Code Block *****
+sed -i 's/-Wp,-MD,$(depfile)/-MF$(depfile) -MD/' Makefile
+sed -i 's/-Wp,-MD,$(depfile)/-MF$(depfile) -MD/' drivers/net/wan/Makefile
+sed -i 's/-Wp,-MD,$(depfile)/-MF$(depfile) -MD/' scripts/Makefile.lib
+***** End Code Block *****
+
+
+ERROR:
+
+***** Begin Error Block *****
+  icc -Wp,-MD,arch/i386/kernel/.asm-offsets.s.d -nostdinc -iwithprefix include -D__KERNEL__ -Iinclude  -D__KERNEL__ -Iinclude  -Wall -Wstrict-prototypes -Wno-trigraphs -O2 -fno-strict-aliasing -fno-common -pipe  -march=i686 -Iinclude/asm-i386/mach-default -fomit-frame-pointer     -DKBUILD_BASENAME=asm_offsets -DKBUILD_MODNAME=asm_offsets -S -o arch/i386/kernel/asm-offsets.s arch/i386/kernel/asm-offsets.c
+icc: Command line warning: ignoring option '-W'; no argument required
+icc: Command line warning: ignoring option '-p'; no argument required
+icc: Command line warning: ignoring unknown option '-fomit-frame-pointer'
+include/linux/kernel.h(10): catastrophic error: could not open source file "stdarg.h"
+  #include <stdarg.h>
+                     ^
+
+compilation aborted for arch/i386/kernel/asm-offsets.c (code 4)
+make[1]: *** [arch/i386/kernel/asm-offsets.s] Error 4
+make: *** [arch/i386/kernel/asm-offsets.s] Error 2
+***** End Error Block *****
+
+FIX:
+
+linux-2.5.73-icc-arch-i386-makefile.patch
+
+
+
+PATCHES THAT WORK:
+linux-2.5.73-icc-AM53C974_c.patch
+linux-2.5.73-icc-ambassador_c.patch
+linux-2.5.73-icc-arch-i386-kernel-makefile.patch
+linux-2.5.73-icc-arch-i386-makefile.patch
+linux-2.5.73-icc-bugs_h.patch
+linux-2.5.73-icc-dcache_c.patch
+linux-2.5.73-icc-dpt_i2o_c.patch
+linux-2.5.73-icc-drivers-acpi-makefile.patch
+linux-2.5.73-icc-drivers-net-skfp-makefile.patch
+linux-2.5.73-icc-e100_h.patch
+linux-2.5.73-icc-fixdep_c.patch
+linux-2.5.73-icc-ftape-bsm_h.patch
+linux-2.5.73-icc-horizon_c.patch
+linux-2.5.73-icc-ini9100u_c.patch
+linux-2.5.73-icc-irq_c.patch
+linux-2.5.73-icc-kernel-makefile.patch
+linux-2.5.73-icc-pci2220i_c.patch
+linux-2.5.73-icc-scsiiom_c.patch
+linux-2.5.73-icc-usbaudio_c.patch
+
+PATCHES THAT FAIL:
+linux-2.5.73-icc-defxx_c.patch
+linux-2.5.73-icc-makefile.patch => 2 succeed 2 fail
+linux-2.5.73-icc-percpu_h.patch
+\EndFolder
+\EndFolder
+\EndFolder
+\EndFolder

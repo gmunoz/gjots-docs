@@ -1,0 +1,172 @@
+\NewEntry
+Parrot Concepts
+\NewFolder
+\NewEntry
+Types
+\NewFolder
+\NewEntry
+INTVAL
+
+An integer type; guaranteed to be wide enough to hold a pointer.
+\NewEntry
+FLOATVAL
+
+An architecture-independent floating point type.
+\NewEntry
+STRING
+
+An abstracted, encoding-independent string type.
+\NewEntry
+PMC (Parrot Magic Cookies)
+
+Other types like a (perl) scalar or an array.
+\EndFolder
+\NewEntry
+Registers
+\NewFolder
+\NewEntry
+INTVAL
+
+I0...I31
+\NewEntry
+FLOATVAL
+
+N0...N31
+\NewEntry
+STRING
+
+S0...S31
+\NewEntry
+PMC (Parrot Magic Cookies)
+
+P0...P31
+\EndFolder
+\NewEntry
+Stacks
+
+The four register stacks are designed to push and pop entire register sets in a single operation. The primary use of these stacks are to save registers across function calls.
+\NewFolder
+\NewEntry
+INTVAL stack
+\NewEntry
+FLOATVAL stack
+\NewEntry
+STRING stack
+\NewEntry
+PMC stack
+\NewEntry
+integer stac
+
+Used for saving and restoring individual integers. The regular expression system uses this heavily.
+\NewEntry
+control stack
+
+Used to keep track of control information and exception handlers.
+\NewEntry
+general-purose stack
+
+This is a typed stack. Used for register spillage. Also designed to be used for code designed for a stack machine, such as the JVM or .NET.
+\EndFolder
+\NewEntry
+PIR
+
+Parts taken from Steve Muchnick's MIR language.
+\NewFolder
+\NewEntry
+Features
+
+imcc/README
+\NewFolder
+\NewEntry
+Automatic register allocation and spillage
+
+When a program requires more than 32 registers for a particular type, then register spillage occurs. The general-purpose stack is used to save and restore individual registers when spillage occurs. Recall that the general-purpose stack is a typed stack, so pusing as one type and popping into a different type is not supported.
+\NewEntry
+Constant folding and expression evaluation
+\NewEntry
+Instruction selection
+\NewEntry
+Optimization
+\NewEntry
+Bytecode generation
+\NewEntry
+Infinite temporary register
+
+Parrot only has 32 registers for each primitive type (INTVAL, FLOATVAL, STRING, and PMC). PIR code can use as many as it needs, with the PIR compiler mapping these temp registers to real registers as it needs to.
+
+Temp registers are noted with a leading dollar sign. For example, P3 refers to the fourth PMC register, while $P3 refers to the fourth temporary PMC register.
+
+The PIR compiler handles:
+  1) Calculating temporary lifetimes
+  2) Spilling excess temps to a backing store
+  3) Moving the temp registers around as needed for expressions
+\NewEntry
+Subroutine call handling
+\NewEntry
+Subroutine preamble handling
+\NewEntry
+Subroutine postamble handling
+\NewEntry
+Named local variable
+\EndFolder
+\NewEntry
+Language
+\NewFolder
+\NewEntry
+Subroutines
+
+.sub __MAIN prototyped, @MAIN
+.param pmc argv
+
+This decalres a subroutine called __MAIN, which is prototyped and has a single parameter called argv of type PMC.
+
+The @MAIN tag marks this subroutine as the starting point of the program.
+
+Parrot assumes that the first subroutine in the first file executed is the driving subroutine. However, this can be changed from the default behavior.
+
+The argv parameter holds the command-line parameters passed into parrot when the program is started.
+\NewEntry
+Preamble
+
+.sub __MAIN prototyped, @MAIN
+.param pmc argv
+\NewEntry
+Postamble
+
+end
+.end
+
+end => Tells parrot to exit
+.end => Marks the end of a subroutine
+\NewEntry
+Variables
+
+.local pmc $varname
+new $varname, .PerlInt
+
+This declares a lexical variable called $varname as a PMC and instantiates it as a PerlInt.
+\NewEntry
+vtables
+
+Values have tables of operations attached to them.
+\EndFolder
+\EndFolder
+\EndFolder
+\NewEntry
+Language Features
+\NewFolder
+\NewEntry
+polymorphic scalars
+
+Scalars can be polymorphic in the sense that a scalar can be considered a string in some cases, an integer in other cases, and so on.
+\NewEntry
+continuations
+\NewEntry
+co-routines
+\NewEntry
+closures
+\EndFolder
+\NewEntry
+Opcode Syntax
+
+[label] opcode dest, source, source ...

@@ -1,0 +1,773 @@
+Custom build instructions for various packages.
+\NewEntry
+charm++
+
+This package is a perfect example of the confusion that occurs when
+software developers don't use the defacto tools for building a package
+across various Unices.
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+./build charm++ mpi-linux gcc \
+    --libdir=/opt/mpich2-0.96p2/lib \
+    --incdir=/opt/mpich2-0.96p2/include
+***** End Code Block *****
+
+Command explanations:
+
+./build: This is the top level script to compile charm++. It does not
+         come with a traditional configure script.
+
+mpi-linux: charm++ specifies the target, gcc specifies the compiler (gcc
+         should be the default, but be explicit). Charm++ requires an
+         external implementation of MPI.
+
+--libdir=: This specifies the directory to look for MPI libraries. This
+         is required if MPI is installed to a custom path, and not
+         handled in `/etc/ld.so.conf'.
+
+--incdir=: This specifies the any extra include directories to be
+         searched for at run-time. Adding the mpi include directory is
+         required in order to find those includes if they are in an
+         alternative location on the filesystem.
+
+Expected compilation output can be seen 
+<a href="charm-build.log">here</a>
+
+Continue by testing the current charm++ build with the following:
+
+***** Begin Code Block *****
+cd pgms/charm++/simplearrayhello
+make
+mpiexec -np 4 ./hello
+***** End Code Block *****
+
+I recommend executing `hello' directly with mpiexec rather than using
+the script that charm creates for you in the CWD, which is called
+`charmrun'. It doesn't appear to be up to speed with the current
+versions of mpich2.
+
+You should get output like the following:
+
+***** Begin example output *****
+Running Hello on 4 processors for 5 elements
+Hello 0 created
+Hello 4 created
+Hi[17] from element 0
+Hello 2 created
+Hello 3 created
+Hello 1 created
+Hi[18] from element 1
+Hi[19] from element 2
+Hi[20] from element 3
+Hi[21] from element 4
+All done
+End of program
+***** End example output *****
+\NewEntry
+Configuring charm++
+
+Charm++ builds itself within its own source directory. You can simply
+move that entire directory to /opt, or wherever you want to install it.
+However, you must ensure permissions are correct when you move it.
+So, after you move it perform the following:
+  $ chown -R root.root /opt/<charm_dir>
+
+Where <charm_dir> is whatever your top level charm directory is named.
+\EndFolder
+\NewEntry
+distcc-2.12.1
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+./configure --prefix=/usr --mandir=/usr/share/man \
+    --sysconfdir=/etc
+make
+make install
+***** End Code Block *****
+
+***** Begin Code Block *****
+cat > /etc/rc.d/init.d/distcc << "EOF"
+#!/bin/bash
+# Begin $rc_base/init.d/
+
+# Based on sysklogd script from LFS-3.1 and earlier.
+# Rewritten by Gerard Beekmans  - gerard@linuxfromscratch.org
+
+source /etc/sysconfig/rc
+source $rc_functions
+
+case "$1" in
+        start)
+                echo "Starting..."
+                loadproc /usr/bin/distccd
+                ;;
+
+        stop)
+                echo "Stopping..."
+                killproc /usr/bin/distccd
+                ;;
+
+        reload)
+                echo "Reloading..."
+                reloadproc /usr/bin/distccd
+                ;;
+
+        restart)
+                $0 stop
+                sleep 1
+                $0 start
+                ;;
+
+        status)
+                statusproc /usr/bin/distccd
+                ;;
+
+        *)
+                echo "Usage: $0 {start|stop|reload|restart|status}"
+                exit 1
+                ;;
+esac
+
+# End $rc_base/init.d/
+EOF
+cd /etc/rc.d/init.d &&
+ln -sf ../init.d/distcc ../rc0.d/K10distcc &&
+ln -sf ../init.d/distcc ../rc1.d/K10distcc &&
+ln -sf ../init.d/distcc ../rc2.d/K10distcc &&
+ln -sf ../init.d/distcc ../rc3.d/S39distcc &&
+ln -sf ../init.d/distcc ../rc4.d/S39distcc &&
+ln -sf ../init.d/distcc ../rc5.d/S39distcc &&
+ln -sf ../init.d/distcc ../rc6.d/K10distcc
+***** End Code Block *****
+\EndFolder
+\NewEntry
+fribidi-0.10.4
+\NewFolder
+\NewEntry
+Introduction to fribidi
+
+Required:
+none
+\NewEntry
+Install
+
+***** Begin Code Block *****
+./configure --prefix=/usr
+make
+make check
+make install
+***** End Code Block *****
+\EndFolder
+\NewEntry
+gaim-0.74
+\NewFolder
+\NewEntry
+Introduction to gaim
+
+Required:
+gtk+2
+
+Optional:
+startup-notification
+openssl
+perl
+tcl
+tk
+alsa-driver
+nas
+gtkspell
+mozilla-nss
+\NewEntry
+Install
+
+***** Begin Code Block *****
+./configure --prefix=/usr --enable-nas
+make
+make install
+***** End Code Block *****
+\EndFolder
+\NewEntry
+grip
+\NewFolder
+\NewEntry
+Introduction to grip
+
+Checks for:
+pkg-config
+libgnomeui-2.0 >= 2.2.0
+vte
+curl
+intltool
+cdda - what is this package?
+CDParanoia-III
+id3lib
+\NewEntry
+Installing Grip
+
+***** Begin Code Block *****
+./configure --prefix=/usr
+make
+make install
+***** End Code Block *****
+\EndFolder
+\NewEntry
+gtkspell-2.0.4
+\NewFolder
+\NewEntry
+Introduction to gtkspell
+
+Required:
+gtk+2
+aspell or pspell
+
+
+Optional:
+\NewEntry
+Install
+
+***** Begin Code Block *****
+./configure --prefix=/usr --disable-gtk-doc
+make
+make install
+***** End Code Block *****
+
+Command explanations:
+--disable-gtk-doc: Specifies not to build the gtk documentation
+    using gtkdoc-scan.
+\EndFolder
+\NewEntry
+MozillaFirebird-cvs
+\NewFolder
+\NewEntry
+Introduction
+
+Required:
+Zip-2.3
+GTK+-2.2.4
+libIDL-0.8.2
+libmng-1.0.6
+which-2.16
+
+Optional:
+\NewEntry
+Install
+
+Download the code through cvs:
+
+***** Begin Code Block *****
+export CVSROOT=:pserver:anonymous@cvs-mirror.mozilla.org:/cvsroot
+cvs co -f mozilla/client.mk
+make -f mozilla/client.mk checkout
+***** End Code Block *****
+
+Create .mozconfig file:
+
+***** Begin Code Block *****
+cd mozilla
+cat > .mozconfig << "EOF"
+export MOZ_PHOENIX=1
+export MOZ_INTERNAL_LIBART_LGPL=1
+mk_add_options MOZ_INTERNAL_LIBART_LGPL=1
+mk_add_options MOZ_PHOENIX=1
+ac_add_options --prefix=/usr
+ac_add_options --enable-default-mozilla-five-home
+ac_add_options --with-x
+ac_add_options --with-system-jpeg
+ac_add_options --with-system-zlib
+ac_add_options --with-system-png
+ac_add_options --with-system-mng
+ac_add_options --enable-crypto
+ac_add_options --disable-tests
+ac_add_options --disable-composer
+ac_add_options --disable-ldap
+ac_add_options --disable-mailnews
+ac_add_options --disable-debug
+ac_add_options --disable-jsd
+ac_add_options --disable-accessibility
+ac_add_options --disable-dtd-debug
+ac_add_options --disable-logging
+ac_add_options --enable-strip
+ac_add_options --enable-strip-libs
+ac_add_options --enable-optimize="-O2 -march=i686 -mcpu=i686 -pipe -fomit-frame-pointer"
+ac_add_options --enable-extensions=default,-inspector,-irc,-venkman,-content-packs,-help
+ac_add_options --enable-plaintext-editor-only
+ac_add_options --enable-xft
+ac_add_options --enable-java-supplement
+ac_add_options --enable-svg
+ac_add_options --enable-toolkit=gtk2
+ac_add_options --enable-default-toolkit=gtk2vi 
+EOF
+***** End Code Block *****
+
+Make the build with:
+
+***** Begin Code Block *****
+make -f client.mk
+***** End Code Block *****
+
+Package with:
+
+***** Begin Code Block *****
+cd xpinstall/packager
+make MOZ_PKG_APPNAME=MozillaFirebird MOZILLA_BIN="\$(DIST)/bin/MozillaFirebird-bin"
+cd ../../dist
+ecp MozillaFirebird-i686-pc-linux-gnu.tar.gz ~/
+***** End Code Block *****
+\EndFolder
+\NewEntry
+MozillaThunderbird-0.7
+
+***** Begin Code Block *****
+export MOZILLA_OFFICIAL="1"
+export BUILD_OFFICIAL="1"
+export MOZ_THUNDERBIRD="1"
+./configure --prefix=/opt/thunderbird-0.7 \
+    --enable-default-toolkit=gtk2 \
+    --with-x --with-system-zlib \
+    --with-system-jpeg --with-system-png --with-system-mng \
+    --enable-xft --enable-crypto \
+    --disable-accessibility \
+    --disable-tests --disable-debug \
+    --disable-logging --enable-reorder \
+    --enable-strip --disable-pedantic \
+    --enable-cpp-rtti --enable-extensions=all \
+    --disable-calendar
+make
+cd profile/src
+make clean
+make
+cd ../build
+make clean
+make
+cd ../..
+make install
+ln -sf /opt/thunderbird-0.7/bin/thunderbird /usr/bin/MozillaThunderbird
+***** End Code Block *****
+
+***** Begin Code Block *****
+cd /opt/thunderbird-0.7/lib/thunderbird-0.7
+export LD_LIBRARY_PATH="$PWD"
+export MOZILLA_FIVE_HOME="$PWD"
+./regxpcom
+./regchrome
+touch `find $PWD -name *.rdf`
+***** End Code Block *****
+\NewEntry
+MPICH-1.2.5.2
+\NewFolder
+\NewEntry
+Introduction to MPICH
+
+Required:
+C Compiler
+
+Optional:
+\NewEntry
+Install
+
+***** Begin Code Block *****
+./configure --prefix=/opt/mpich-1.2.5.2 -rsh=ssh
+make
+cd examples/basic
+make cpi
+../../bin/mpirun -np 4 cpi
+cd ../..
+make testing
+make install
+***** End Code Block *****
+\NewEntry
+Configuring MPICH
+
+Examples directory is provided in the installed source.
+
+***** Begin Code Block *****
+cd $PREFIX/examples/basic
+make cpi
+../../bin/mpirun -np 4 cpi
+***** End Code Block *****
+\EndFolder
+\NewEntry
+MPICH2-0.96p2
+\NewFolder
+\NewEntry
+Introduction to MPICH2
+
+Required:
+C Compiler
+
+Optional:
+C++ Compiler
+Fortran Compiler
+Python >= 2.2
+PyXML
+expat
+\NewEntry
+Install
+
+***** Begin Code Block *****
+./configure --prefix=/opt/mpich2-0.96p2 \
+    --enable-f77=no --enable-f90=no
+make
+make install
+***** End Code Block *****
+
+--enable-f77 => Fortran 77 bindings
+--enable-f90 => Fortran 90 bindings
+--enable-cxx => C++ bindings
+--with-device=ch3:shm => For a SMP machine
+--with-device=ch3:ssm => For a cluster of SMP machines
+\NewEntry
+Configuring MPICH2
+
+Global mpd.hosts file
+=====================
+
+Create the global /etc/mpd.hosts file:
+
+***** Begin Code Block *****
+cat > ~/mpd.hosts << "EOF"
+node0
+node1
+node2
+node3
+node4
+node5
+node6
+EOF
+***** End Code Block *****
+
+Make sure the above file includes the hostname for the Head Node.
+
+User accounts
+=============
+
+For normal user accounts:
+
+***** Begin Code Block *****
+cat > ~/.mpd.conf << "EOF"
+secretword=<secretword>
+EOF
+chmod 600 ~/.mpd.conf
+***** End Code Block *****
+
+Make sure to change <secretword> to some string of your choosing.
+
+Initial sanity check
+====================
+
+by verifying process manager within local machine.
+
+***** Begin Code Block *****
+mpd &
+mpdtrace
+mpdallexit
+***** End Code Block *****
+
+Configure multiple machines
+===========================
+
+***** Begin Code Block *****
+mpdboot
+***** End Code Block *****
+
+This will start the mpd daemon on each node listed in `/etc/mpd.hosts'
+file. This command will also ensure that the mpd daemon is started on the
+Head Node whether it is listed in `/etc/mpd.hosts' or not.
+
+Test ring creation
+==================
+
+To view the hosts that have a mpd daemon running:
+
+***** Begin Code Block *****
+mpdtrace
+***** End Code Block *****
+
+To see how long a message takes to go around the ring:
+
+***** Begin Code Block *****
+mpdringtest <number>
+***** End Code Block *****
+
+Test that several processes can be spawned off correctly:
+
+***** Begin Code Block *****
+mpdrun -n <number> hostname
+***** End Code Block *****
+
+Test an MPI-based program
+=========================
+
+***** Begin Code Block *****
+mpiexec -n 5 cpi
+***** End Code Block *****
+
+***** Begin Code Block *****
+mpiexec -n 1 master : -n 19 slave
+***** End Code Block *****
+\EndFolder
+\NewEntry
+nss_ldap-212
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+./configure --enable-schema-mapping --with-ldap-lib=openldap --with-ldap-dir=/usr &&
+make &&
+make install
+***** End Code Block *****
+
+You have to edit the /etc/nsswitch.conf like this :
+
+passwd: files ldap
+group:  files ldap
+shadow: files ldap
+\EndFolder
+\NewEntry
+oompi-1.0.4
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+CXX=mpicxx ./configure --prefix=/opt/oompi-1.0.4
+make
+make install
+***** End Code Block *****
+
+Command explanations:
+
+CXX=mpicxx: This overrides the default C++ compiler to be MPICH's
+            `mpicxx'.
+
+--prefix=...: Specifies an alternative install directory in /opt.
+\EndFolder
+\NewEntry
+openbox-3.1
+\NewFolder
+\NewEntry
+Introduction to openbox
+
+Required:
+XFree86-4.30
+GLib-2.4.0
+libxml2-2.6.8
+
+Optional:
+FreeType-2.1.5
+startup-notification-0.5
+\NewEntry
+Install
+
+***** Begin Code Block *****
+./configure --prefix=/usr --sysconfdir=/etc
+make
+make install
+***** End Code Block *****
+
+Command explanations:
+--sysconfdir=etc: This will make sure that the configuration files are
+    installed to /etc.
+\NewEntry
+Configuring
+
+As your normal user, create the user configuration files as follows:
+
+***** Begin Code Block *****
+mkdir ~/.config
+cp -R /etc/xdg/openbox .config
+***** End Code Block *****
+
+Use the system wide files as a starting point for your personal
+configuration.
+\EndFolder
+\NewEntry
+OpenLDAP-2.1.22
+\NewFolder
+\NewEntry
+Install
+
+Follow instructions in BLFS.
+
+In addition, perform the following commands (requires openssl):
+
+***** Begin Code Block *****
+mkdir /etc/openldap/ssl &&
+cd /etc/openldap/ssl &&
+openssl req -new -x509 -nodes -out slapd.pem -keyout slapd.key -days 365
+***** End Code Block *****
+Use the following script to start openldap for a server:
+
+***** Begin Code Block *****
+cat > /etc/rc.d/init.d/openldap << "EOF"
+#!/bin/bash
+# Begin $rc_base/init.d/
+
+# Based on sysklogd script from LFS-3.1 and earlier.
+# Rewritten by Gerard Beekmans  - gerard@linuxfromscratch.org
+
+source /etc/sysconfig/rc
+source $rc_functions
+
+case "$1" in
+	start)
+		echo "Starting OpenLDAP..."
+		loadproc /usr/sbin/slapd -h "ldap:///  ldaps:///"
+		;;
+
+	stop)
+		echo "Stopping OpenLDAP..."
+		killproc /usr/sbin/slapd
+		;;
+
+	restart)
+		$0 stop
+		sleep 1
+		$0 start
+		;;
+
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+		exit 1
+		;;
+esac
+
+# End $rc_base/init.d/
+EOF
+chmod 755 /etc/rc.d/init.d/openldap &&
+ln -s  /etc/rc.d/init.d/openldap /etc/rc.d/rc0.d/K20openldap &&
+ln -s  /etc/rc.d/init.d/openldap /etc/rc.d/rc1.d/K20openldap &&
+ln -s  /etc/rc.d/init.d/openldap /etc/rc.d/rc2.d/K20openldap &&
+ln -s  /etc/rc.d/init.d/openldap /etc/rc.d/rc3.d/S60openldap &&
+ln -s  /etc/rc.d/init.d/openldap /etc/rc.d/rc4.d/S60openldap &&
+ln -s  /etc/rc.d/init.d/openldap /etc/rc.d/rc5.d/S60openldap &&
+ln -s  /etc/rc.d/init.d/openldap /etc/rc.d/rc6.d/K20openldap
+***** End Code Block *****
+
+Also make sure to add the following to /etc/syslog.conf:
+
+***** Begin Code Block *****
+local4.* -/var/log/openldap.log
+***** End Code Block *****
+
+Then restart the logging daemon with:
+
+***** Begin Code Block *****
+/etc/rc.d/init.d/syslogd restart
+***** End Code Block *****
+\EndFolder
+\NewEntry
+PAM - Beowulf
+\NewFolder
+\NewEntry
+cracklib,2.7
+
+Download either `allwords' or `cracklib' from
+http://www.cotse.com/wordlists/
+
+***** Begin Code Block *****
+cp {cracklib,allwords} /usr/share/dict/ &&
+cd /usr/share/dict &&
+ln -s cracklib words
+***** End Code Block *****
+
+Make sure you link which ever dictionary you really want to use to
+words.
+
+Now, begin installation of cracklib
+
+***** Begin Code Block *****
+cat >> crack.h << "EOF"
+#ifndef CRACKLIB_H
+#define CRACKLIB_H
+/* Pass this function a password (pw) and a path to the
+ * dictionaries (/usr/lib/cracklib_dict should be specified)
+ * and it will either return a NULL string, meaning that the
+ * password is good, or a pointer to a string that explains the
+ * problem with the password.
+ * You must link with -lcrack
+ */
+extern char *FascistCheck(char *pw, char *dictpath);
+#endif
+EOF
+***** End Code Block *****
+
+***** Begin Code Block *****
+cat >> util/create_cracklib_dict << "EOF"
+#!/bin/sh
+if [ -z "$*" ]; then
+	echo "Usage:"
+	echo "  $0 wordlist ..."
+	echo
+	echo "This script takes one or more word list files as arguments"
+	echo "and converts them into cracklib dictionaries for use"
+	echo "by password checking programs. The results are placed in"
+	echo "/usr/lib/cracklib_dict.*"
+	echo
+	echo "Example:"
+	echo "$0 /usr/share/dict/words"
+else
+	/usr/sbin/mkdict $* | /usr/sbin/packer /usr/lib/cracklib_dict
+fi
+EOF
+***** End Code Block *****
+
+***** Begin Code Block *****
+make DICTPATH=/usr/lib/cracklib_dict SRCDICTS=/usr/share/dict/words install &&
+cp cracklib/libcrack.a /usr/lib &&
+cp crack.h /usr/include &&
+cp util/{mkdict,packer,create_cracklib_dict} /usr/sbin
+***** End Code Block *****
+\NewEntry
+Linux-PAM-0.77
+
+Installed according to BLFS.
+\NewEntry
+Shadow-4.0.3 with PAM
+
+Follow the instructions in BLFS.
+\EndFolder
+\NewEntry
+pam_ldap-166
+\NewFolder
+\NewEntry
+Install
+
+***** Begin Code Block *****
+./configure --with-ldap-lib=openldap --with-ldap-dir=/usr &&
+make &&
+make install &&
+cp pam.d/* /etc/pam.d/
+***** End Code Block *****
+\EndFolder
+\NewEntry
+tightvnc-1.2.9
+\NewFolder
+\NewEntry
+Introduction to tightvnc
+
+Required:
+XFree86
+libjpeg
+zlib
+\NewEntry
+Install
+
+***** Begin Code Block *****
+xmkmf
+make World
+cd Xvnc
+./configure
+make
+cd ..
+./vncinstall /usr/bin /usr/share/man
+***** End Code Block *****
+
+Command explanations:
+\EndFolder

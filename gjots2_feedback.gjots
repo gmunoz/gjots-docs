@@ -1,0 +1,275 @@
+\NewEntry
+gjots2 feedback v.02
+
+Updated: Friday, June 4, 2004
+
+General notes
+=============
+
+On the gjots website and in the accompanied README file you mention
+the package dependencies required for gjots2. I think this is a *very*
+good idea when using these types of programming languages and bindings
+to graphical toolkits for several reasons:
+  1) These bindings typically don't have good documentation
+     describing their own dependincies (pygtk => gnome-python, etc).
+  2) Thesebindings are usually less stable than their native bindings
+     (all scripting languages fall into this category with the possible
+     exception of tcl/tk), and they are subject to *change* quickly.
+  3) The versions of stable use can be a black magic (e.g. which
+     versions of libgnome with pygtk and gnome-python is good to use?).
+
+Given the above, I found your information on package dependencies to
+be very useful. I don't use Gentoo, but I do build by systems from
+source and it was nice to see the versions that you had developed
+and tested on.
+
+I have successfully run gjots2 with the following dependent libraries:
+  glib-2.4.1
+  gtk+-2.4.1
+  libglade-2.3.6
+  pygtk-2.3.92
+  ORBIT2-2.10.1
+  intltool-0.30
+  GConf-2.6.1
+  libbonobo-2.6.0
+  gnome-mime-data-2.4.1
+  gnome-vfs-2.6.1.1
+  libgnome-2.6.1.1
+  libart_lgpl-2.3.16
+  libgnomecanvas-2.6.1.1
+  libbonoboui-2.6.0
+  gnome-keyring-0.2.1
+  libgnomeui-2.6.1.1
+  pyorbit-2.0.0
+  gnome-python-2.0.2
+
+These packages are effectively known as GNOME 2.6. The most
+important libraries are noted on your website and are libglade,
+pygtk, gnome-python, and pyorbit. However, I think you should add
+one package to that list and it is libgnomeui!!! gnome-python checks
+for this library (and many more), but will build just fine without
+it, but gjots2 *requires* it. Adding this package to your list will
+pretty much imply all the other packages I mentioned above and should
+satisfy your list on the website. I don't know anything about the
+Gentoo dependencies for this, but I am absolutely certain about this
+analysis. Let me know and I'll point you to the configure logs of
+my builds.
+
+Additionally, the above packages may hopefully help you out if you
+have any questions/concerns on the bugs I will be outlining below.
+
+The man page specifies the package that fmt(1) is in, but specific to
+Gentoo. Technically, fmt(1) is part of the Coreutils package maintained
+by GNU at http://www.gnu.org/software/coreutils/. I think it is good
+to mention this as well in the man page.
+\NewFolder
+\NewEntry
+gjots2 bugs
+\NewFolder
+\NewEntry
+save
+
+TODO: Reproduce this (I wasn't actually trying to debug when I ran
+across this).
+
+I clicked on save and the save dialog appeared, although I don't know
+what triggers it to save as. However, the save dialog's 'cancel'
+button does not do anything. You have to use the window manager to
+close the window.
+\NewEntry
+Copy and paste within gjots
+
+I am unable to copy text between two text items.
+\NewEntry
+Cut and Paste
+
+After I cut text I am unable to paste it back into the
+application. Reproduce this by selecting some text, then using <CTRL>
++ x or Edit->Cut, and try pasting with Edit->Pase or <CTRL> + v. The
+text will not be pasted although the status bar states that the text
+was pasted! If it was pasted then I don't know where, because it
+didn't occur where the cursor was :)
+
+I am also unable to cut and paste to external applications.
+\NewEntry
+Copy and Paste from gjots2 to other GTK2 applications
+
+I am unable to copy text from from gjots2 and paste it into other
+GTK2 applications using <CTRL> + c and <CTRL> + v.
+
+The X11 method of using middle mouse click to paste will work for
+this issue right now, but this is not how it is supposed to work for
+GTK2 applications.
+
+\NewEntry
+Copy and paste from other applications to gjots2
+
+TODO: Look into these issue further.
+
+If you copy text from another application (tested with Mozilla Firefox
+0.8 and Abiword-2.0.7), and highlight text in gjots2 to paste over,
+the copy buffer gets over-written with the text that was highlighted
+in gjots2. So, when you paste the text that gets pasted is the text
+that you had highlighted to get over-written.
+
+This is a common "feature" (bug IMHO) of Linux, but usually occurs
+between X11 based applications (xterm, etc.). This can normally be
+worked around by using the middle click for X11, and the regular <CTRL>
++ x/v/c for GTK based applications. However, I don't expect the buffer
+to be overridden the way that it is in this case.
+
+The buffer copy buffer should *not* be replaced by highlighted text
+in gjots2!
+\NewEntry
+File->Save as
+
+This button doesn't do anything (as far as I can tell).
+\NewEntry
+File->Export
+
+1) The cancel button does not do anything. You have to use the window
+manager to close the dialog box.
+
+NOTE: This seems to be affecting many of the dialog boxes. Is this
+only on my end I wonder?
+
+2) Another issue, exporting the entire tree (everything under the
+main root) generates a file that differs from the original. This is
+strange and not expected. Look into this further and find out what
+extra things are being added.
+
+3) Related to issue 2 (most likely), re-opening an exported gjots file
+renders it incorrectly. The same root does not exist as the original
+created it.
+
+Clarification on points 2 and 3. The extra keyword tags that were
+inserted into the gtjos file that was exported occur at the beginning
+and end of the file.
+
+At the beginning of the file an extra:
+NewEntry
+NewFolder
+
+And at the end of the file an extra (to match the NewFolder above):
+EndFolder
+
+These entries are all that were added, and should be removed. I
+confirmed this with diff(1).
+
+I did not observe this bug when exporting only a single branch of the
+main tree. This most likely has occured because exporting the entire
+tree is equivalent to copying the gjots file that is currently opened,
+and is not expected behavior from the end user. However, I do this
+quite often :)
+\NewEntry
+Click and Drag to highlight
+
+TODO: This is extremely difficult to re-produce. Find a way to
+reproduce so the bug can be tracked down.
+
+Occasionally when I use the mouse to highlight text the entire
+application will crash.
+\EndFolder
+\NewEntry
+gjots2 feature requests
+\NewFolder
+\NewEntry
+Placement and look of toolbars
+
+It would be nice if I had the option to place the left toolbar on
+the top as well (with small icons with or without text).
+
+A small version of the top toolbar would be a feature for minimizing
+the screen real estate of gjots.
+\NewEntry
+Shortcut keys for left panel
+
+It is rather confusing that the left panel has Cut, Copy, and Paste
+buttons but they don't correspond to the actions in the Edit menu.
+There is an issue here of copy, cut, and paste of text and the copy,
+cut, and paste of entire tree items. If I recall, this issue was also
+in gjots-0.9.
+
+The terminology for the copy, cut, paste of tree items should be made
+less ambiguous and short cut keys for all of them should exist.
+\NewEntry
+New Child location
+
+Currently creating a New Child item will place the item at the
+end of the selected tree item. This makes it a little annoying to
+selectively place a new child item within an existing tree. After
+creating the child item you will have to push it up until you get it
+to the right location.
+
+Would it be possible to allow placing New Child and New Item objects
+just after the current selection? I forget even how gjots-0.9 did
+this. Check up on this.
+\NewEntry
+Right-click Menu in Tree
+
+The functionality of having a drop down menu when right clicking on
+the tree to get a list of available options. gjots-0.9 would provide
+this menu as a method of viewing the functionality provided by the
+left menu, as well as import and export functions. It would be nice
+to have all of this plus the option to Save as that would pertain to
+only the selected branch of the tree.
+\NewEntry
+gjots2html enabled wrap
+
+gjots has word wrapping functionality in its editor, but what if I
+wanted to convert a gjots file to html or plain text and I wanted
+it to have line wrap at 72 characters so it would fit on a terminal,
+but I didn't want the word wrap to exist in my gjots version.
+
+As far as I know, the gjots2html does not support wrapping lines at
+a specified length on conversion, but depends on this to be done in
+the gjots editor. This makes it difficult to keep you entire gjots
+file without word wrap, while getting your plain text version or html
+file to wrap.
+
+I would propose the gjots2html program to be able to enable wrapping
+without modifying the source gjots file. An option such as -w
+[wrap length] could be added to gjots2html program, and could be
+implemented as such. I don't think it would be too difficult to
+implement considering the type of language that Python is (not from
+personal knowledge, but I am familiar with other scripting languages
+such as Perl and Ruby).
+\NewEntry
+Help->Read Manual
+
+Opening up the gjots manual makes it unable to manipulate the main
+gjots window. This is usually a common option in GUI programing to
+open up a window and make the callee unmodifiable. It would be nice
+to be able to read the manual while trying things out in my own
+gjots workspace.
+\NewEntry
+Delete tree item
+
+There is no option to delete a tree item. In order to delete a tree
+item you need to cut it out and simply never paste it back in. This
+is strange behavior and I would expect there to be a way to simply
+Delete an item, although the use of Cut for dual functionality.
+
+Comments from the maintainer on the expected usage of the application?
+\NewEntry
+Export directly to html/docbook
+
+This would simply the procedure of having to export a branch of
+the gjots tree in its native format and then using the associated
+gjots2html command to convert the gjots file to html. The functionality
+already exists, and now executing this external command should be
+even easier from within Python.
+
+Maybe just a drop down list of supported file types in the export
+dialog box combined with auto-detection of what extension the user
+types into the text box for an output name would be sufficient.
+\EndFolder
+\NewEntry
+General Questions
+\NewFolder
+\NewEntry
+gjots keywords
+
+Are the gjots keywords guaranteed to be on a line by themselves?
+\EndFolder
+\EndFolder

@@ -1,0 +1,76 @@
+\NewEntry
+Resources
+
+Mono homepage
+  http://www.mono-project.com/
+
+Microsoft C# Developers Center
+  http://msdn.microsoft.com/vcsharp/team/language/default.aspx
+
+Standard ECMA-334: The C# Language Specification
+  http://www.ecma-international.org/publications/standards/Ecma-334.htm
+
+Standard ECMA-335: Common Language Infrastructure (CLI)
+  http://www.ecma-international.org/publications/standards/Ecma-335.htm
+\NewEntry
+Command-line tools
+\NewFolder
+\NewEntry
+mono
+
+mono executes a compiled Mono program in its virtual machine. It uses a just-in-time compiler (JIT) for translation between compiled CIL bytecode to machine code.
+
+  $ mono --version
+\NewEntry
+mcs
+
+mcs is the Mono C# Compiler. mcs compiles code into Common Intermediate Language (CIL) bytecode for execution by the mono virtual machine.
+\NewEntry
+mint
+
+mint interprets the CIL bytecode in real-time as the program is executing. This is the mono interpreter that does *not* utilize the JIT compiler.
+\NewEntry
+monodoc
+
+monodoc is the Mono documentation viewer. Documentation for available Mono API's may be found with monodoc.
+\NewEntry
+monop
+
+monop is the Mono class outline viewer. It is a tool that allows you to view the outline (e.g. method signatures) of a class.
+
+  $ monop [-r:assembly] [--search] class
+
+ Example:
+  $ monop -r:NUnit.Framework NUnit.Framework.AssertionException
+\NewEntry
+gacutil
+
+gacutil is a tool used to install versioned assemblies into the system Global Assembly Cache (GAC) to become part of the assemblies that are available for all applications at runtime. This tool is for the installation, removal, and listing of the contents of the assembly cache.
+
+ List all assemblies stored in the system's GAC:
+  $ gacutil -l
+
+ Installs  an  assembly into the global assembly cache.
+  $ gacutil -i CookComputing.XmlRpc.dll -package xml-rpc.net
+\EndFolder
+\NewEntry
+Environment variables
+\NewFolder
+\NewEntry
+MONO_GAC_PREFIX
+
+This variable may need to be set to the PREFIX that you installed mono into. For example, if you compiled mono into `/usr', so mono has the full path `/usr/bin/mono', then set the MONO_GAC_PREFIX as:
+  $ export MONO_GAC_PREFIX=/usr
+\NewEntry
+MOZILLA_FIVE_HOME
+
+If you utilize the mozilla libraries with Mono (e.g. gecko-sharp/gtkmozembed-sharp, etc.), then you may need to set your mozilla home to the prefix where you installed it. For example, if firefox is stored in `/usr/bin/firefox', then set your mozilla home as:
+  $ export MOZILLA_FIVE_HOME=/usr
+\NewEntry
+LD_LIBRARY_PATH
+
+This may not be requied on all systems, but if you try developing with Mono and utilize the gecko (mozilla) components, then you may need to set your library path to where the firefox/mozilla libraries are located. This may be required even if you have the libraries within a standard location like `/usr/lib'. For example, set your path directly to the firefox library directory:
+  $ export LD_LIBRARY_PATH=/usr/lib/firefox-1.0
+
+Optionally, add the path to `/etc/ld.so.conf' and re-run `ldconfig'.
+\EndFolder

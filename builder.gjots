@@ -1,0 +1,131 @@
+Builder Package Format
+\NewEntry
+.package
+\NewFolder
+\NewEntry
+package
+
+No text is set for this element, it is used as the parent element for all children elements of a pacakge.
+
+Attributes
+==========
+
+id - A unique identifier of the package (e.g. gcc). It should be the primary symbol used as an index to search for this package. Similar to the key word used in apt-get, yum, portage, etc. This name should be all lowercase (no real reason other than to be consistent).
+\NewFolder
+\NewEntry
+name
+
+The full (proper) name of the package (e.g. GNU Compiler Collection). This should be contained on a single line (72 characters).
+\NewEntry
+summary
+
+A short--one line--summary of the package. One line is specified to be 72 characters. If the summary exceeds 72 characters, then a warning will be generated and the first 72 characters will be displayed.
+\NewEntry
+description
+
+The full description of the package. There are no limits to the length of the description.
+\NewEntry
+version
+
+The version of this package.
+\NewEntry
+release
+
+The release version number of this particular package. If a package (version) needs to be repackaged, then this number is incremented. This number should start at 1 for each new package. This number should remain a whole number, no decimals or dashes.
+
+This number is commonly appended to the end of the version number of a package, preceded by a dash.
+
+For a nice description, see here (is RPM related, but it is distro neutral): http://www.rpm.org/max-rpm/s1-rpm-inside-tags.html#S3-RPM-INSIDE-RELEASE-TAG
+
+Not every package will need this element.
+\NewEntry
+license
+
+The license that this package is released under.
+
+TODO: Can there be more than one license?
+\NewEntry
+homepage
+
+The primary homepage of the package. This is not direct URL that contains the source tarball, but is the homepage of the projects information. However, if a package does not have a homepage, then this element may contain a URL to its primary download location.
+\NewEntry
+mirrors
+
+No text is set for this element, it is used as the parent element for all children mirror elements.
+\NewFolder
+\NewEntry
+mirror
+
+A parent element for the name and url elements of a particular mirror.
+\NewFolder
+\NewEntry
+name
+
+The human-readable name of the mirror. This may be just a short name of the URL (e.g. kernel.org), or a common name for the download spot. This information may be used in tooltips as well as a label.
+\NewEntry
+url
+
+The URL of the mirror. This URL should be a direct link to the directory that contains the given tarball for this version of the package. The exact package name will be derived from the name and version elements. The URL must be complete. No assumptions are made about the Internet protocol (whether http, ftp, etc.).
+\EndFolder
+\EndFolder
+\NewEntry
+dependencies
+
+No text is set for this element, it is used as the parent element for all children dependency elements.
+\NewFolder
+\NewEntry
+dependency
+
+A parent element for all dependency meta information. A dependency is a type of pacakge.
+
+Attributes
+==========
+
+id: The short name of the package. All lowercase. This acts as a key that uniquely identifies a dependency.
+
+type: Possible values are 'required', 'recommended', 'optional', or 'conflict'.
+\NewFolder
+\NewEntry
+purpose
+
+The purpose this dependency satifies as a depenedency for this package. There is no limit to the length of the text for purpose.
+\EndFolder
+\EndFolder
+\NewEntry
+build
+
+The parent element that contains all information regarding how to build this package from source.
+\NewFolder
+\NewEntry
+script
+
+Acts as a parent for all child elements that make up a script. Each script element represents a type of build step, which is identified by the type attribute.
+
+Attributes
+==========
+
+type: The type of script that this build represents. Possible values are:
+  setup
+  configure
+  make
+  test
+  install
+  post-install
+  configuration
+\NewFolder
+\NewEntry
+command
+
+The text that may be passed to a bourne compatible shell. This represents a single command, but technically can be anything that can be parsed by a shell (e.g. simple command, pipeline, control structures, etc.).
+\NewFolder
+\NewEntry
+option
+
+This elements is only meaningful when nested inside a command element of attribute type 'configure'. Each option represents an option to the configure script. Many of these options are common across many (all) packages, and can be easily categorized for the user.
+\EndFolder
+\EndFolder
+\EndFolder
+\EndFolder
+\EndFolder
+\NewEntry
+.builder

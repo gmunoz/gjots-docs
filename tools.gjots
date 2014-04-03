@@ -1,0 +1,52 @@
+Tools for various UNIX platforms
+\NewEntry
+CVS Access to Software
+\NewFolder
+\NewEntry
+Binutils
+
+cvs -z 3 -d :pserver:anoncvs@sources.redhat.com:/cvs/src \
+    export -D "18:00:00 2004-04-08 UTC" binutils
+mv src binutils-2.15.90-20040408
+tar jcvf binutils-2.15.90-20040408.tar.bz2 binutils-2.15.90-20040408
+\NewEntry
+GCC
+
+cvs -d :ext:anoncvs@savannah.gnu.org:/cvsroot/gcc -qz9 checkout -P gcc
+\NewEntry
+Glibc
+
+cvs -z 3 -d :pserver:anoncvs@sources.redhat.com:/cvs/glibc \
+    export -d glibc-2.3.4-20040408 -D "18:00:00 2004-04-08 UTC" libc
+sed -i -e "s/stable/unstable \(20040408\)/" -e "s/2\.3\.3/2.3.4/" \
+    glibc-2.3.4-20040408/version.h
+tar jcvf glibc-2.3.4-20040408.tar.bz2 glibc-2.3.4-20040408
+
+For today's snapshot:
+
+cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/glibc -z3 co libc     
+     mv libc glibc-2.3-`date +%Y%m%d`
+     tar cjf glibc-2.3-`date +%Y%m%d`.tar.bz2 glibc-2.3-`date +%Y%m%d`
+     rm -rf glibc-2.3-`date +%Y%m%d`
+\EndFolder
+\NewEntry
+gcov
+\NewEntry
+gprof
+\NewEntry
+lmbench
+\NewEntry
+nm
+
+nm /usr/lib/crti.o | more
+nm /opt/intel_cc_80/lib/crtxi.o | more
+\NewEntry
+vmstat
+\NewEntry
+Xorg Configuration
+
+***** Begin Code Block *****
+X -configure
+Xorg -scanpci
+X -xf86config /root/XF86Config.new
+***** End Code Block *****
